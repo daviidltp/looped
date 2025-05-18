@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class FriendHeader extends StatelessWidget {
   final String profilePicUrl;
   final String name;
-  const FriendHeader({Key? key, required this.profilePicUrl, required this.name}) : super(key: key);
+  const FriendHeader({super.key, required this.profilePicUrl, required this.name});
 
   @override
   Widget build(BuildContext context) {

@@ -10,10 +10,8 @@ class AppTheme {
     primaryColor: spotifyGreen,
     colorScheme: ColorScheme.dark(
       primary: spotifyGreen,
-      background: Colors.black,
       surface: const Color(0xFF121212),
       onPrimary: Colors.white,
-      onBackground: Colors.white,
       onSurface: Colors.white,
       secondary: Colors.white,
     ),
@@ -50,10 +48,8 @@ class AppTheme {
     primaryColor: spotifyGreen,
     colorScheme: ColorScheme.light(
       primary: spotifyGreen,
-      background: Colors.white,
       surface: const Color(0xFFF5F5F5),
       onPrimary: Colors.black,
-      onBackground: Colors.black,
       onSurface: Colors.black,
       secondary: Colors.black,
     ),

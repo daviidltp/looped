@@ -5,9 +5,9 @@ class WeeklyLoops extends StatelessWidget {
   final List<Map<String, String>> songs;
 
   const WeeklyLoops({
-    Key? key,
+    super.key,
     required this.songs,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

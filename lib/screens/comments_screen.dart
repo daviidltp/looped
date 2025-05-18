@@ -11,12 +11,12 @@ class CommentsScreen extends StatefulWidget {
   final List<Map<String, dynamic>> comments;
 
   const CommentsScreen({
-    Key? key,
+    super.key,
     required this.username,
     required this.profilePicUrl,
     required this.songs,
     required this.comments,
-  }) : super(key: key);
+  });
 
   static Route<void> route({
     required String username,

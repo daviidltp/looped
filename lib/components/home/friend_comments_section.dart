@@ -8,12 +8,12 @@ class FriendCommentsSection extends StatelessWidget {
   final String username;
 
   const FriendCommentsSection({
-    Key? key,
+    super.key,
     required this.comments,
     required this.onCommentTap,
     required this.profilePicUrl,
     required this.username,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

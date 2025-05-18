@@ -8,11 +8,11 @@ class SpotifyAuthWebView extends StatefulWidget {
   final bool isLoading;
 
   const SpotifyAuthWebView({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onClose,
     required this.isLoading,
-  }) : super(key: key);
+  });
 
   @override
   State<SpotifyAuthWebView> createState() => _SpotifyAuthWebViewState();

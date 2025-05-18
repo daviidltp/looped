@@ -8,13 +8,13 @@ class SongComponent extends StatelessWidget {
   final bool showPlays;
 
   const SongComponent({
-    Key? key,
+    super.key,
     required this.title,
     required this.artist,
     required this.imageUrl,
     required this.plays,
     this.showPlays = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

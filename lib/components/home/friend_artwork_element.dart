@@ -6,11 +6,11 @@ class FriendArtworkElement extends StatelessWidget {
   final String artist;
 
   const FriendArtworkElement({
-    Key? key,
+    super.key,
     required this.imageUrl,
     required this.title,
     required this.artist,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

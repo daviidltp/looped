@@ -10,12 +10,12 @@ class FriendTopSongsRow extends StatelessWidget {
   final String name;
   
   const FriendTopSongsRow({
-    Key? key, 
+    super.key, 
     required this.songs,
     this.description,
     required this.profilePicUrl,
     required this.name,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

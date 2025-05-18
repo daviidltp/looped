@@ -9,7 +9,7 @@ import '../widgets/spotify_auth_webview.dart';
 
 class SpotifyAuthScreen extends StatefulWidget {
   final VoidCallback? onAuth;
-  const SpotifyAuthScreen({Key? key, this.onAuth}) : super(key: key);
+  const SpotifyAuthScreen({super.key, this.onAuth});
 
   @override
   State<SpotifyAuthScreen> createState() => _SpotifyAuthScreenState();
@@ -18,7 +18,7 @@ class SpotifyAuthScreen extends StatefulWidget {
 class _SpotifyAuthScreenState extends State<SpotifyAuthScreen> {
   bool _isLoading = false;
   String? _errorMessage;
-  TextEditingController _tokenController = TextEditingController();
+  final TextEditingController _tokenController = TextEditingController();
   bool _showWebView = false;
   WebViewController? _webViewController;
   String? _state;

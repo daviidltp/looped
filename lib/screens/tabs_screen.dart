@@ -6,7 +6,7 @@ import 'dart:ui';
 import 'package:flutter/services.dart';
 
 class TabsScreen extends StatefulWidget {
-  const TabsScreen({Key? key}) : super(key: key);
+  const TabsScreen({super.key});
 
   @override
   State<TabsScreen> createState() => _TabsScreenState();
@@ -45,7 +45,7 @@ class _TabsScreenState extends State<TabsScreen> {
     final Color backgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final Color selectedColor = const Color.fromARGB(255, 175, 255, 176).withAlpha((0.1 * 255).toInt());
     final Color splashColor = Theme.of(context).colorScheme.inversePrimary.withAlpha((0.05 * 255).toInt());
-    final Color unselectedColor = Theme.of(context).colorScheme.onBackground.withAlpha((0.6 * 255).toInt());
+    final Color unselectedColor = Theme.of(context).colorScheme.onSurface.withAlpha((0.6 * 255).toInt());
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Stack(

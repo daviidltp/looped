@@ -6,11 +6,11 @@ class CommentInput extends StatelessWidget {
   final VoidCallback onSend;
 
   const CommentInput({
-    Key? key,
+    super.key,
     this.profilePic,
     required this.controller,
     required this.onSend,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

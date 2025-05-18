@@ -5,7 +5,7 @@ import '../components/profile/weekly_loops.dart';
 import '../services/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -46,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return {
         'title': (track['name'] ?? 'Unknown Track') as String,
         'artist': track['artists'] != null && (track['artists'] as List).isNotEmpty
-            ? ((track['artists'] as List).map((artist) => artist['name']).join(', ')) as String
+            ? ((track['artists'] as List).map((artist) => artist['name']).join(', '))
             : 'Unknown Artist',
         'image': imageUrl,
         'plays': (track['popularity'] ?? '0').toString(),

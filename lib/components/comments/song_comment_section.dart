@@ -7,12 +7,12 @@ class SongCommentSection extends StatelessWidget {
   final String plays;
 
   const SongCommentSection({
-    Key? key,
+    super.key,
     required this.image,
     required this.title,
     required this.artist,
     this.plays = '20',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

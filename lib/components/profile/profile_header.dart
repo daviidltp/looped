@@ -11,7 +11,7 @@ class ProfileHeader extends StatelessWidget {
   static const String followers = '32K';
   static const String following = '2,288';
 
-  const ProfileHeader({Key? key}) : super(key: key);
+  const ProfileHeader({super.key});
 
   void _navigateToSettings(BuildContext context) {
     Navigator.of(context).push(

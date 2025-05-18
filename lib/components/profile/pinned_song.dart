@@ -5,9 +5,9 @@ class PinnedSong extends StatelessWidget {
   final Map<String, String> song;
 
   const PinnedSong({
-    Key? key,
+    super.key,
     required this.song,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

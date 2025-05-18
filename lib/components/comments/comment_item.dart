@@ -7,12 +7,12 @@ class CommentItem extends StatelessWidget {
   final String? time;
 
   const CommentItem({
-    Key? key,
+    super.key,
     required this.username,
     required this.profilePic,
     required this.text,
     this.time,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
