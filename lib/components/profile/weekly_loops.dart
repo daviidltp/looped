@@ -31,6 +31,7 @@ class WeeklyLoops extends StatelessWidget {
                     title: song['title']!,
                     artist: song['artist']!,
                     plays: song['plays']!,
+                    duration: song['duration'],
                   )).toList()
               : [
                   Center(

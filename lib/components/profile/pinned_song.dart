@@ -21,6 +21,7 @@ class PinnedSong extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
         const SizedBox(height: 16),
@@ -30,6 +31,7 @@ class PinnedSong extends StatelessWidget {
           artist: song['artist']!,
           plays: song['plays']!,
           showPlays: false,
+          duration: song['duration'],
         ),
       ],
       ),

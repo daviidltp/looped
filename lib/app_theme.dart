@@ -7,9 +7,9 @@ class AppTheme {
   static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Colors.black,
-    primaryColor: spotifyGreen,
+    primaryColor: Colors.white,
     colorScheme: ColorScheme.dark(
-      primary: spotifyGreen,
+      primary: Colors.white,
       surface: const Color(0xFF121212),
       onPrimary: Colors.white,
       onSurface: Colors.white,
@@ -29,7 +29,7 @@ class AppTheme {
       elevation: 0,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: spotifyGreen,
+      backgroundColor: Colors.transparent,
       foregroundColor: Colors.white,
     ),
     textTheme: const TextTheme(
@@ -67,8 +67,8 @@ class AppTheme {
       elevation: 0,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: spotifyGreen,
-      foregroundColor: Colors.white,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
     ),
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: Colors.black),

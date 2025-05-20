@@ -3,31 +3,28 @@ import '../components/comments/comment_item.dart';
 import '../components/comments/song_comment_section.dart';
 import '../components/comments/comment_input.dart';
 import '../services/auth_service.dart';
+import '../utils/data_helpers.dart';
 
 class CommentsScreen extends StatefulWidget {
   final String username;
-  final String profilePicUrl;
   final List<Map<String, String>> songs;
   final List<Map<String, dynamic>> comments;
 
   const CommentsScreen({
     super.key,
     required this.username,
-    required this.profilePicUrl,
     required this.songs,
     required this.comments,
   });
 
   static Route<void> route({
     required String username,
-    required String profilePicUrl,
     required List<Map<String, String>> songs,
     required List<Map<String, dynamic>> comments,
   }) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => CommentsScreen(
         username: username,
-        profilePicUrl: profilePicUrl,
         songs: songs,
         comments: comments,
       ),
@@ -86,6 +83,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final String postAuthorProfilePic = getProfilePicForUser(widget.username);
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -112,7 +111,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                   const SizedBox(width: 8),
                   CircleAvatar(
                     radius: 20,
-                    backgroundImage: NetworkImage(widget.profilePicUrl),
+                    backgroundImage: NetworkImage(postAuthorProfilePic),
                   ),
                   const SizedBox(width: 12),
                   Text(
@@ -162,12 +161,16 @@ class _CommentsScreenState extends State<CommentsScreen> {
                       ),
                     )
                   else
-                    ...widget.comments.map((comment) => CommentItem(
-                      username: comment['username'],
-                      profilePic: comment['profilePic'],
-                      text: comment['text'],
-                      time: comment['time'],
-                    )),
+                    ...widget.comments.map((commentData) {
+                      final commenterUsername = commentData['username'] as String;
+                      final commenterProfilePic = getProfilePicForUser(commenterUsername);
+                      return CommentItem(
+                        username: commenterUsername,
+                        profilePic: commenterProfilePic,
+                        text: commentData['text'] as String,
+                        time: commentData['time'] as String?,
+                      );
+                    }),
                 ],
               ),
             ),

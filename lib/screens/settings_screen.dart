@@ -7,8 +7,8 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
+        backgroundColor: Colors.black,
         appBar: AppBar(
           title: const Text('Ajustes'),
           centerTitle: true,
@@ -117,7 +117,6 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 20),
           ],
         ),
-      ),
     );
   }
 

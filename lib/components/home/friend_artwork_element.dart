@@ -15,6 +15,7 @@ class FriendArtworkElement extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AspectRatio(
           aspectRatio: 1,
@@ -83,17 +84,15 @@ class FriendArtworkElement extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.left,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 0),
         Text(
           artist,
           style: const TextStyle(fontSize: 11, color: Colors.grey),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.left,
         ),
       ],
     );
   }
-} 
+}

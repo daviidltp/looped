@@ -5,6 +5,13 @@ import '../components/home/friend_top_songs_row.dart';
 import '../components/home/friend_comments_section.dart';
 import '../screens/comments_screen.dart';
 import '../services/track_service.dart';
+import '../components/user_header.dart';
+import '../screens/profile_screen.dart';
+import 'package:flutter/cupertino.dart';
+import '../data/users_data.dart'; // para usuarios
+import '../data/posts_data.dart'; // para posts
+import '../screens/detail/friend_songs_details_screen.dart';
+import '../utils/navigation_utils.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -17,99 +24,8 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
   List<List<Map<String, String>>> _topSongsList = [];
   bool _isLoading = true;
   bool _isFirstLoad = true;
+  bool _isRefreshing = false;
   
-  // Lista de amigos con nombres de usuario y comentarios
-  final List<Map<String, dynamic>> _friends = [
-    {
-      'name': '@musiclover42',
-      'profilePic': 'https://randomuser.me/api/portraits/men/32.jpg',
-      'description': "Mis bucles favoritos de esta semana. ¡No puedo parar de escucharlos!",
-      'comments': [
-        {
-          'username': 'beatmaster99',
-          'profilePic': 'https://randomuser.me/api/portraits/men/45.jpg',
-          'text': '¡Increíble selección! Me encanta especialmente la primera canción.',
-          'time': '2h',
-        },
-        {
-          'username': 'vinylcollector',
-          'profilePic': 'https://randomuser.me/api/portraits/men/67.jpg',
-          'text': '¿Has escuchado el último álbum de este artista?',
-          'time': '1h',
-        },
-      ],
-    },
-    {
-      'name': '@beatmaster99',
-      'profilePic': 'https://randomuser.me/api/portraits/men/45.jpg',
-      'description': "Perfecto para estudiar y concentrarse. Estas canciones me ayudan a mantener el foco.",
-      'comments': [], // Sin comentarios
-    },
-    {
-      'name': '@vinylcollector',
-      'profilePic': 'https://randomuser.me/api/portraits/men/67.jpg',
-      'description': "Vibes de verano para empezar el día con energía",
-      'comments': [
-        {
-          'username': 'musiclover42',
-          'profilePic': 'https://randomuser.me/api/portraits/men/32.jpg',
-          'text': '¡Qué buenos gustos!',
-          'time': '3h',
-        },
-      ],
-    },
-    {
-      'name': '@rockstar2023',
-      'profilePic': 'https://randomuser.me/api/portraits/men/89.jpg',
-      'description': "Mi playlist definitiva para el gimnasio. ¡Estas canciones me dan el empujón que necesito!",
-      'comments': [
-        {
-          'username': 'abepe1010',
-          'profilePic': 'https://randomuser.me/api/portraits/men/8.jpg',
-          'text': 'GUAU GUAU GUAU 🐶',
-          'time': '5h',
-        },
-        {
-          'username': 'davidltp',
-          'profilePic': 'https://randomuser.me/api/portraits/men/3.jpg',
-          'text': 'Abepe perro',
-          'time': '5h',
-        },
-        {
-          'username': 'jazzenthusiast',
-          'profilePic': 'https://randomuser.me/api/portraits/men/12.jpg',
-          'text': '¡Me encanta esta selección!',
-          'time': '5h',
-        },
-        {
-          'username': 'musiclover42',
-          'profilePic': 'https://randomuser.me/api/portraits/men/32.jpg',
-          'text': '¿Has escuchado su último single?',
-          'time': '4h',
-        },
-        {
-          'username': 'beatmaster99',
-          'profilePic': 'https://randomuser.me/api/portraits/men/45.jpg',
-          'text': '¡Increíble!',
-          'time': '3h',
-        },
-      ],
-    },
-    {
-      'name': '@jazzenthusiast',
-      'profilePic': 'https://randomuser.me/api/portraits/men/12.jpg',
-      'description': "Una selección de jazz contemporáneo que me tiene enganchado últimamente",
-      'comments': [
-        {
-          'username': 'vinylcollector',
-          'profilePic': 'https://randomuser.me/api/portraits/men/67.jpg',
-          'text': '¡Qué buen gusto musical!',
-          'time': '1h',
-        },
-      ],
-    },
-  ];
-
   @override
   bool get wantKeepAlive => true;
 
@@ -134,6 +50,10 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
       setState(() {
         _isLoading = true;
       });
+    } else {
+      setState(() {
+        _isRefreshing = true;
+      });
     }
 
     final trackData = await TrackService.getPopularTracksList();
@@ -144,18 +64,8 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
       _topSongsList = trackData;
       _isLoading = false;
       _isFirstLoad = false;
+      _isRefreshing = false;
     });
-  }
-
-  void _openCommentsScreen(BuildContext context, int index) {
-    Navigator.of(context).push(
-      CommentsScreen.route(
-        username: _friends[index]['name'],
-        profilePicUrl: _friends[index]['profilePic'],
-        songs: _topSongsList[index % _topSongsList.length],
-        comments: List<Map<String, dynamic>>.from(_friends[index]['comments']),
-      ),
-    );
   }
 
   @override
@@ -164,38 +74,86 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
     
     if (_isLoading && _isFirstLoad) {
       return const Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
       );
     }
 
     return RefreshIndicator(
       onRefresh: _loadTrackData,
-      child: ListView.builder(
-        itemCount: _friends.length,
-        itemBuilder: (context, i) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 0.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FriendHeader(
-                profilePicUrl: _friends[i]['profilePic'],
-                name: _friends[i]['name'],
-              ),
-              FriendTopSongsRow(
-                songs: _topSongsList[i % _topSongsList.length],
-                description: _friends[i]['description'],
-                profilePicUrl: _friends[i]['profilePic'],
-                name: _friends[i]['name'],
-              ),
-              FriendCommentsSection(
-                comments: List<Map<String, String>>.from(_friends[i]['comments']),
-                onCommentTap: () => _openCommentsScreen(context, i),
-                profilePicUrl: _friends[i]['profilePic'],
-                username: _friends[i]['name'],
-              ),
-            ],
+      child: Stack(
+        children: [
+          ListView.builder(
+            itemCount: postsData.length,
+            itemBuilder: (context, i) {
+              final post = postsData[i];
+              final user = usersData.firstWhere(
+                (u) => u['username'] == post['user'],
+                orElse: () => {},
+              );
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 0.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (user.isNotEmpty)
+                      InkWell(
+                        splashFactory: NoSplash.splashFactory,
+                        highlightColor: Colors.transparent,
+                        onTap: () => NavigationUtils.openProfileScreen(context, user),
+                        child: UserHeader(
+                          username: user['username'],
+                          name: user['name'],
+                          verificado: user['verificado'],
+                          profilePic: user['profilePic'],
+                        ),
+                      ),
+                    InkWell(
+                      splashFactory: NoSplash.splashFactory,
+                      highlightColor: Colors.transparent,
+                      onTap: () => NavigationUtils.openSongsDetailScreen(
+                        context,
+                        songs: _topSongsList[i % _topSongsList.length],
+                        user: user,
+                      ),
+                      child: FriendTopSongsRow(
+                        songs: _topSongsList[i % _topSongsList.length],
+                        description: post['description'],
+                        profilePicUrl: user['profilePic'],
+                        name: user['username'],
+                      ),
+                    ),
+                    InkWell(
+                      splashFactory: NoSplash.splashFactory,
+                      highlightColor: Colors.transparent,
+                      onTap: () => NavigationUtils.openCommentsScreen(
+                        context,
+                        username: post['user'],
+                        songs: _topSongsList[i % _topSongsList.length],
+                        comments: List<Map<String, dynamic>>.from(post['comments']),
+                      ),
+                      child: FriendCommentsSection(
+                        comments: List<Map<String, String>>.from(post['comments']),
+                        username: post['user'],
+                        songs: _topSongsList[i % _topSongsList.length],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
-        ),
+          if (_isRefreshing)
+            const Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: LinearProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            ),
+        ],
       ),
     );
   }

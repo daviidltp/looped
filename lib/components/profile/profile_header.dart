@@ -1,17 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../../screens/settings_screen.dart';
+import '../../data/users_data.dart';
 
 class ProfileHeader extends StatelessWidget {
   static const String bannerUrl = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRk84CCrcc6w3YeE2xGC_V5_CIqJF2EdwzAbA&s';
-  static const String profilePicUrl = 'https://yt3.googleusercontent.com/lUkgGqUdmDu6JlftN606h8O9lNpH_9sFX6xR5VnVOV6Usbv-2SNz5GRCit5C4wdJLIsAfClZ=s900-c-k-c0x00ffffff-no-rj';
-  static const String name = 'Pedro D. Quevedo';
-  static const String username = '@quevedo';
-  static const String description = 'Buenas noches';
-  static const String followers = '32K';
-  static const String following = '2,288';
+  static const String defaultProfilePicUrl = 'https://img.freepik.com/foto-gratis/fondo-oscuro-abstracto_1048-1920.jpg?semt=ais_hybrid&w=740';
+  static const String defaultName = 'David Lopez';
+  static const String defaultUsername = 'david';
+  static const String description = 'Hola chavales';
+  static const String followersDefault = '5,121';
+  static const String followingDefault = '2,288';
 
-  const ProfileHeader({super.key});
+  final bool isCurrentUser;
+  final Map<String, dynamic> user;
+  final bool? isFriend;
+  final VoidCallback? onToggleFollow;
+
+  const ProfileHeader({
+    super.key,
+    required this.user,
+    this.isCurrentUser = true,
+    this.isFriend,
+    this.onToggleFollow,
+  });
 
   void _navigateToSettings(BuildContext context) {
     Navigator.of(context).push(
@@ -26,152 +38,167 @@ class ProfileHeader extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 8),
+      decoration: const BoxDecoration(
         color: Colors.transparent,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Stack(
-            clipBehavior: Clip.none,
+          // Primera fila: Avatar + Stats
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Banner de fondo
-              Container(
-                height: 120,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                  image: DecorationImage(
-                    image: NetworkImage(bannerUrl),
-                    fit: BoxFit.cover,
-                  ),
+              // Avatar
+              CircleAvatar(
+                radius: 38,
+                backgroundColor: theme.scaffoldBackgroundColor,
+                child: CircleAvatar(
+                  radius: 34,
+                  backgroundImage: NetworkImage(user['profilePic'] ?? defaultProfilePicUrl),
                 ),
               ),
-              // Avatar superpuesto
-              Positioned(
-                left: 24,
-                bottom: -40,
-                child: CircleAvatar(
-                  radius: 40,
-                  backgroundColor: theme.scaffoldBackgroundColor,
-                  child: CircleAvatar(
-                    radius: 36,
-                    backgroundImage: NetworkImage(profilePicUrl),
-                  ),
+              const SizedBox(width: 24),
+              // Stats
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildStatItem('Followers', user['followers']?.toString() ?? followersDefault, center: true),
+                    _buildStatItem('Following', user['following']?.toString() ?? followingDefault, center: true),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 48),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          const SizedBox(height: 14),
+          // Nombre y verificado
+          Row(
+            children: [
+              Text(
+                user['name'] ?? defaultName,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              if (user['verificado'] == true) ...[
+                const SizedBox(width: 6),
+                const Icon(Icons.verified, color: Colors.blue, size: 18),
+              ],
+            ],
+          ),
+          // Username
+     
+          // Descripción
+          if ((user['descripcion'] ?? description).toString().isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0, bottom: 8),
+              child: Text(
+                user['descripcion'] ?? description,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.white70,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          // Botones ocupando todo el ancho
+          if (isCurrentUser)
+            Row(
               children: [
-                Row(
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 6),
-                    Icon(Icons.verified, color: Colors.green, size: 20),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  username,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _buildStatItem('Followers', followers),
-                    const SizedBox(width: 24),
-                    _buildStatItem('Following', following),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  description,
-                  style: const TextStyle(fontSize: 15, color: Colors.white70),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.edit, color: Colors.white, size: 20),
-                            const SizedBox(width: 8),
-                            const Text('Editar perfil', 
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600
-                              )
-                            ),
-                          ],
-                        ),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 36),
+                      foregroundColor: Colors.white.withOpacity(0.2),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => _navigateToSettings(context),
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: theme.primaryColor.withOpacity(0.7), width: 1.5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.settings, color: theme.primaryColor, size: 20),
-                            const SizedBox(width: 8),
-                            Text('Ajustes', 
-                              style: TextStyle(
-                                color: theme.primaryColor, 
-                                fontWeight: FontWeight.w600
-                              )
-                            ),
-                          ],
-                        ),
-                      ),
+                    child: Text('Editar perfil', 
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      )
                     ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _navigateToSettings(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      side: BorderSide(color: theme.primaryColor.withOpacity(0.7), width: 1.2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      minimumSize: const Size(0, 36),
+                    ),
+                    child: Text('Ajustes', 
+                      style: TextStyle(
+                        color: theme.primaryColor, 
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      )
+                    ),
+                  ),
+                ),
               ],
             ),
-          ),
+          // Si no es el usuario actual, mostrar botón de seguir/seguir
+          if (!isCurrentUser && isFriend != null && onToggleFollow != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: GestureDetector(
+                  onTap: onToggleFollow,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: isFriend! ? Colors.black : Colors.white,
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        isFriend! ? 'Siguiendo' : 'Seguir',
+                        style: TextStyle(
+                          color: isFriend! ? Colors.white : Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(String label, String value) {
+  Widget _buildStatItem(String label, String value, {bool center = false}) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: center ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
         Text(
-          value,
+          _formatNumber(value),
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
         const SizedBox(height: 2),
@@ -184,5 +211,23 @@ class ProfileHeader extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _formatNumber(String numberStr) {
+    // Remove any commas from the string and parse to int
+    int number = int.tryParse(numberStr.replaceAll(',', '')) ?? 0;
+    
+    if (number < 10000) {
+      // For numbers less than 10k, return as is
+      return number.toString();
+    } else if (number < 1000000) {
+      // For numbers between 10k and 1M, format as K
+      double value = number / 1000;
+      return value >= 100 ? '${value.toInt()}K' : '${value.toStringAsFixed(1)}K';
+    } else {
+      // For numbers 1M and above, format as M
+      double value = number / 1000000;
+      return value >= 10 ? '${value.toInt()}M' : '${value.toStringAsFixed(1)}M';
+    }
   }
 }

@@ -6,6 +6,7 @@ class SongComponent extends StatelessWidget {
   final String imageUrl;
   final String plays;
   final bool showPlays;
+  final String? duration;
 
   const SongComponent({
     super.key,
@@ -14,6 +15,7 @@ class SongComponent extends StatelessWidget {
     required this.imageUrl,
     required this.plays,
     this.showPlays = true,
+    this.duration,
   });
 
   @override
@@ -118,8 +120,16 @@ class SongComponent extends StatelessWidget {
               ],
             ),
           ),
-          if (showPlays) ...[
+          if (duration != null) ...[
             const SizedBox(width: 8),
+            Text(
+              duration!,
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ],
       ),

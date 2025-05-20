@@ -4,6 +4,9 @@ import 'profile_screen.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui';
 import 'package:flutter/services.dart';
+import 'search_friends_screen.dart';
+import '../services/auth_service.dart';
+import '../data/users_data.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
@@ -15,9 +18,47 @@ class TabsScreen extends StatefulWidget {
 class _TabsScreenState extends State<TabsScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [
-    HomeTab(),
-    ProfileScreen(),
+  String? _username;
+  String? _profilePic;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+    );
+  }
+
+  Future<void> _loadProfileData() async {
+    final username = await AuthService.getUsername();
+    final profilePic = await AuthService.getProfilePic();
+    if (mounted) {
+      setState(() {
+        _username = username;
+        _profilePic = profilePic;
+      });
+    }
+  }
+
+  List<Widget> get _pages => [
+    const HomeTab(),
+    const SearchFriendsScreen(),
+    Builder(
+      builder: (context) {
+        final myuser = usersData.firstWhere(
+          (u) => u['username'] == 'david',
+          orElse: () => usersData.firstWhere((u) => u['username'] == 'abepe1010'),
+        );
+        return ProfileScreen(
+          user: myuser,
+          isCurrentUser: true,
+        );
+      },
+    ),
   ];
 
   final List<_NavBarItemData> _navBarItems = const [
@@ -25,20 +66,12 @@ class _TabsScreenState extends State<TabsScreen> {
       icon: Icons.home,
     ),
     _NavBarItemData(
+      icon: Icons.search,
+    ),
+    _NavBarItemData(
       icon: Icons.person,
     ),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light, // o Brightness.dark según el tema
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,21 +93,19 @@ class _TabsScreenState extends State<TabsScreen> {
             ),
             bottomNavigationBar: Container(
               decoration: const BoxDecoration(
-                // Bordes redondeados solo arriba izquierda y arriba derecha
-                color: Colors.transparent, // color se pone en el child para mantener el BoxShadow
+                color: Colors.transparent,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(3),
                   topRight: Radius.circular(18),
                 ),
               ),
               padding: const EdgeInsets.only(bottom: 0),
-              // Aquí agregamos la sombra blanca al BottomNavigationBar
               child: Container(
                 decoration: BoxDecoration(
                   color: backgroundColor,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.white.withOpacity(0.05), // Sombra blanca más visible
+                      color: Colors.white.withOpacity(0.05),
                       blurRadius: 10,
                       offset: const Offset(0, -1),
                       spreadRadius: 0,
@@ -108,15 +139,12 @@ class _TabsScreenState extends State<TabsScreen> {
                         child: Row(
                           children: List.generate(_navBarItems.length, (index) {
                             final item = _navBarItems[index];
-                            // Definir el BorderRadius para cada ítem
                             BorderRadius itemRadius;
                             if (index == 0) {
-                              // Izquierda: solo arriba izquierda
                               itemRadius = const BorderRadius.only(
                                 topLeft: Radius.circular(18),
                               );
                             } else if (index == _navBarItems.length - 1) {
-                              // Derecha: solo arriba derecha
                               itemRadius = const BorderRadius.only(
                                 topRight: Radius.circular(18),
                               );

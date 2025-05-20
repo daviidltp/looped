@@ -1,29 +1,26 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
+import '../../utils/data_helpers.dart';
 
 class FriendCommentsSection extends StatelessWidget {
   final List<Map<String, String>> comments;
-  final VoidCallback onCommentTap;
-  final String profilePicUrl;
   final String username;
+  final List<Map<String, String>> songs;
 
   const FriendCommentsSection({
     super.key,
     required this.comments,
-    required this.onCommentTap,
-    required this.profilePicUrl,
     required this.username,
+    required this.songs,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onCommentTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           if (comments.isEmpty)
             Row(
               children: [
@@ -48,7 +45,6 @@ class FriendCommentsSection extends StatelessWidget {
             )
           else
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Mostrar solo el primer comentario en la preview
                 Row(
@@ -56,7 +52,9 @@ class FriendCommentsSection extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 16,
-                      backgroundImage: NetworkImage(comments[0]['profilePic']!),
+                      backgroundImage: NetworkImage(
+                        getProfilePicForUser(comments[0]['username'] as String),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -99,19 +97,21 @@ class FriendCommentsSection extends StatelessWidget {
                 ),
                 if (comments.length > 1)
                   Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      'Ver ${comments.length - 1} comentario${comments.length - 1 != 1 ? 's' : ''} más',
-                      style: TextStyle(
-                        color: Colors.grey.withOpacity(0.7),
-                        fontSize: 14,
+                    padding: const EdgeInsets.only(top: 8,),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Ver ${comments.length - 1} comentario${comments.length - 1 != 1 ? 's' : ''} más',
+                        style: TextStyle(
+                          color: Colors.grey.withOpacity(0.7),
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                   ),
               ],
             ),
         ],
-        ),
       ),
     );
   }
