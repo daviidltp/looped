@@ -3,6 +3,7 @@ import 'app_theme.dart';
 import 'screens/spotify_auth_screen.dart';
 import 'screens/tabs_screen.dart';
 import 'services/auth_service.dart';
+import 'welcome_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,15 +28,23 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _checkAuthentication() async {
     final isAuth = await AuthService.isAuthenticated();
-    setState(() {
-      _isAuthenticated = isAuth;
-      _isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isAuthenticated = isAuth;
+        _isLoading = false;
+      });
+    }
   }
 
   void _onAuthenticated() {
     setState(() {
       _isAuthenticated = true;
+    });
+  }
+
+  void _onLogout() {
+    setState(() {
+      _isAuthenticated = false;
     });
   }
 
@@ -47,47 +56,38 @@ class _MyAppState extends State<MyApp> {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       initialRoute: '/',
+      onGenerateRoute: (settings) {
+        if (settings.name == '/') {
+          return MaterialPageRoute(
+            builder: (context) => FutureBuilder<bool>(
+              future: AuthService.isAuthenticated(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return _buildLoadingScreen();
+                }
+                final isAuth = snapshot.data ?? false;
+                return isAuth
+                    ? const TabsScreen()
+                    : SpotifyAuthScreen(onAuth: _onAuthenticated);
+              },
+            ),
+          );
+        }
+        return null;
+      },
       routes: {
-        '/': (context) => _isLoading
-            ? _buildLoadingScreen()
-            : _isAuthenticated
-                ? const TabsScreen()
-                : SpotifyAuthScreen(onAuth: _onAuthenticated),
+        '/welcome': (context) => WelcomeScreen(onEnter: _onAuthenticated),
       },
       debugShowCheckedModeBanner: false,
     );
   }
 
   Widget _buildLoadingScreen() {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.black,
-              Colors.grey.shade900,
-            ],
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'looped',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 42,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 40),
-            CircularProgressIndicator(
-              color: Colors.white,
-            ),
-          ],
+    return const Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
         ),
       ),
     );

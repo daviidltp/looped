@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
-class FriendArtworkElement extends StatelessWidget {
+class FriendArtworkElement extends StatefulWidget {
   final String imageUrl;
   final String title;
   final String artist;
@@ -13,6 +14,19 @@ class FriendArtworkElement extends StatelessWidget {
   });
 
   @override
+  State<FriendArtworkElement> createState() => _FriendArtworkElementState();
+}
+
+class _FriendArtworkElementState extends State<FriendArtworkElement> {
+  late final int playCount;
+
+  @override
+  void initState() {
+    super.initState();
+    playCount = Random().nextInt(101); // Genera un número entre 0 y 100
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -20,17 +34,18 @@ class FriendArtworkElement extends StatelessWidget {
         AspectRatio(
           aspectRatio: 1,
           child: ClipRRect(
+            borderRadius: BorderRadius.circular(4),
             child: Container(
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 35, 35, 35),
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 35, 35, 35),
               ),
-              child: imageUrl.isNotEmpty
+              child: widget.imageUrl.isNotEmpty
                   ? Image.network(
-                      imageUrl,
+                      widget.imageUrl,
                       fit: BoxFit.cover,
                       cacheWidth: 200,
                       errorBuilder: (context, error, stackTrace) {
-                        print('Error loading image: $imageUrl - $error');
+                        print('Error loading image: ${widget.imageUrl} - $error');
                         return Container(
                           color: const Color.fromARGB(255, 35, 35, 35),
                           child: const Column(
@@ -78,16 +93,35 @@ class FriendArtworkElement extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Icon(
+              Icons.loop,
+              size: 14,
+              color: Colors.white70,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              playCount.toString(),
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
         Text(
-          title,
+          widget.title,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 0),
         Text(
-          artist,
+          widget.artist,
           style: const TextStyle(fontSize: 11, color: Colors.grey),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,

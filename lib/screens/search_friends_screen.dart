@@ -148,7 +148,10 @@ class _SearchFriendsScreenState extends State<SearchFriendsScreen> with Automati
                   itemCount: _searchResults.length,
                   itemBuilder: (context, index) {
                     final user = _searchResults[index];
-                    return GestureDetector(
+                    return InkWell(
+                      highlightColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      splashFactory: NoSplash.splashFactory,
                       onTap: () => NavigationUtils.openProfileScreen(context, user),
                       child: UserHeader(
                         username: user['username'],

@@ -84,65 +84,103 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
       onRefresh: _loadTrackData,
       child: Stack(
         children: [
-          ListView.builder(
-            itemCount: postsData.length,
-            itemBuilder: (context, i) {
-              final post = postsData[i];
-              final user = usersData.firstWhere(
-                (u) => u['username'] == post['user'],
-                orElse: () => {},
-              );
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 0.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (user.isNotEmpty)
-                      InkWell(
-                        splashFactory: NoSplash.splashFactory,
-                        highlightColor: Colors.transparent,
-                        onTap: () => NavigationUtils.openProfileScreen(context, user),
-                        child: UserHeader(
-                          username: user['username'],
-                          name: user['name'],
-                          verificado: user['verificado'],
-                          profilePic: user['profilePic'],
+          ListView(
+            children: [
+              // App Header
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      
+                        Image.asset(
+                          'assets/logo_final.png',
+                          height: 40,
+                        ),
+                      
+                      const SizedBox(width: 12),
+                      const Text(
+                        'looped',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    InkWell(
-                      splashFactory: NoSplash.splashFactory,
-                      highlightColor: Colors.transparent,
-                      onTap: () => NavigationUtils.openSongsDetailScreen(
-                        context,
-                        songs: _topSongsList[i % _topSongsList.length],
-                        user: user,
-                      ),
-                      child: FriendTopSongsRow(
-                        songs: _topSongsList[i % _topSongsList.length],
-                        description: post['description'],
-                        profilePicUrl: user['profilePic'],
-                        name: user['username'],
-                      ),
-                    ),
-                    InkWell(
-                      splashFactory: NoSplash.splashFactory,
-                      highlightColor: Colors.transparent,
-                      onTap: () => NavigationUtils.openCommentsScreen(
-                        context,
-                        username: post['user'],
-                        songs: _topSongsList[i % _topSongsList.length],
-                        comments: List<Map<String, dynamic>>.from(post['comments']),
-                      ),
-                      child: FriendCommentsSection(
-                        comments: List<Map<String, String>>.from(post['comments']),
-                        username: post['user'],
-                        songs: _topSongsList[i % _topSongsList.length],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              );
-            },
+              ),
+              // Section Title
+              
+              // Posts List
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: postsData.length,
+                itemBuilder: (context, i) {
+                  final post = postsData[i];
+                  final user = usersData.firstWhere(
+                    (u) => u['username'] == post['user'],
+                    orElse: () => {},
+                  );
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 0.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (user.isNotEmpty)
+                          InkWell(
+                            splashFactory: NoSplash.splashFactory,
+                            highlightColor: Colors.transparent,
+                            onTap: () => NavigationUtils.openProfileScreen(context, user),
+                            child: UserHeader(
+                              username: user['username'],
+                              name: user['name'],
+                              verificado: user['verificado'],
+                              profilePic: user['profilePic'],
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: InkWell(
+                            splashFactory: NoSplash.splashFactory,
+                            highlightColor: Colors.transparent,
+                            onTap: () => NavigationUtils.openSongsDetailScreen(
+                              context,
+                              songs: _topSongsList[i % _topSongsList.length],
+                              user: user,
+                            ),
+                            child: FriendTopSongsRow(
+                              songs: _topSongsList[i % _topSongsList.length],
+                              description: post['description'],
+                              profilePicUrl: user['profilePic'],
+                              name: user['username'],
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          splashFactory: NoSplash.splashFactory,
+                          highlightColor: Colors.transparent,
+                          onTap: () => NavigationUtils.openCommentsScreen(
+                            context,
+                            username: post['user'],
+                            songs: _topSongsList[i % _topSongsList.length],
+                            comments: List<Map<String, dynamic>>.from(post['comments']),
+                          ),
+                          child: FriendCommentsSection(
+                            comments: List<Map<String, String>>.from(post['comments']),
+                            username: post['user'],
+                            songs: _topSongsList[i % _topSongsList.length],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
           if (_isRefreshing)
             const Positioned(

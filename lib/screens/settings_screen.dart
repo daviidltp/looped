@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'spotify_auth_screen.dart';
+import '../main.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -178,12 +179,12 @@ class SettingsScreen extends StatelessWidget {
           TextButton(
             onPressed: () async {
               await AuthService.logout();
+              if (!context.mounted) return;
               Navigator.of(ctx).pop();
-              // Redirect to the auth screen
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => const SpotifyAuthScreen(),
-                ),
+              // Limpiar el stack de navegación y redirigir a la pantalla de autenticación
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/',
+                (route) => false,
               );
             },
             style: TextButton.styleFrom(

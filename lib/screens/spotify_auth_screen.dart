@@ -302,30 +302,13 @@ class _SpotifyAuthScreenState extends State<SpotifyAuthScreen> {
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.5),
+                                        color: Colors.black.withOpacity(1),
                                         blurRadius: 60,
                                         spreadRadius: 30,
                                       ),
                                     ],
                                   ),
-                                  child: ClipOval(
-                                    child: ImageFiltered(
-                                      imageFilter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                                      child: ColorFiltered(
-                                        colorFilter: const ColorFilter.mode(
-                                          Colors.white,
-                                          BlendMode.srcATop,
-                                        ),
-                                        child: Image.asset(
-                                          'assets/logo_dark_test.png',
-                                          width: logoSize * 2.5,
-                                          height: logoSize * 2.5,
-                                          fit: BoxFit.cover,
-                                          opacity: const AlwaysStoppedAnimation(0.2),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+
                                 ),
                                 // Main logo
                                 Container(
@@ -338,7 +321,7 @@ class _SpotifyAuthScreenState extends State<SpotifyAuthScreen> {
                                   child: Center(
                                     child: ClipOval(
                                       child: Image.asset(
-                                        'assets/logo_def.png',
+                                        'assets/logo_final.png',
                                         width: logoSize * 2.4,
                                         height: logoSize * 2.4,
                                         fit: BoxFit.cover,

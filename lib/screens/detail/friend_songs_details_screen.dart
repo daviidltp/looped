@@ -225,7 +225,13 @@ class _FriendSongsDetailPageState extends State<FriendSongsDetailPage> with Tick
                         Stack(
                           alignment: Alignment.center,
                           children: [
-                            _buildDisc(currentSong['image'] ?? ''),
+                            if (_currentIndex == 0)
+                              Hero(
+                                tag: 'song_hero_${widget.user['name']}_${widget.songs[0]['id'] ?? widget.songs[0]['title']}',
+                                child: _buildDisc(currentSong['image'] ?? ''),
+                              )
+                            else
+                              _buildDisc(currentSong['image'] ?? ''),
                           ],
                         ),
                         const SizedBox(height: 100), // Espacio entre el disco y el texto

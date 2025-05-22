@@ -20,6 +20,7 @@ class AuthService {
   static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(tokenKey, token);
+    print('Token saved: $token');
   }
   
   // Get the access token

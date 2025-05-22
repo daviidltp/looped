@@ -11,6 +11,7 @@ class ProfileHeader extends StatelessWidget {
   static const String description = 'Hola chavales';
   static const String followersDefault = '5,121';
   static const String followingDefault = '2,288';
+  static const String totalPlaysDefault = '3,500';
 
   final bool isCurrentUser;
   final Map<String, dynamic> user;
@@ -45,66 +46,71 @@ class ProfileHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Primera fila: Avatar + Stats
+          // Primera fila: Avatar + Nombre y descripción
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: (user['descripcion'] ?? description).toString().isEmpty 
+                ? CrossAxisAlignment.center 
+                : CrossAxisAlignment.start,
             children: [
               // Avatar
               CircleAvatar(
-                radius: 38,
+                radius: 32,
                 backgroundColor: theme.scaffoldBackgroundColor,
                 child: CircleAvatar(
-                  radius: 34,
+                  radius: 32,
                   backgroundImage: NetworkImage(user['profilePic'] ?? defaultProfilePicUrl),
                 ),
               ),
-              const SizedBox(width: 24),
-              // Stats
+              const SizedBox(width: 16),
+              // Nombre, verificado y descripción
               Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildStatItem('Followers', user['followers']?.toString() ?? followersDefault, center: true),
-                    _buildStatItem('Following', user['following']?.toString() ?? followingDefault, center: true),
+                    Row(
+                      children: [
+                        Text(
+                          user['name'] ?? defaultName,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        if (user['verificado'] == true) ...[
+                          const SizedBox(width: 6),
+                          const Icon(Icons.verified, color: Colors.blue, size: 20),
+                        ],
+                      ],
+                    ),
+                    if ((user['descripcion'] ?? description).toString().isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: Text(
+                          user['descripcion'] ?? description,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white70,
+                          ),
+                          maxLines: 5,
+                        ),
+                      ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
-          // Nombre y verificado
+          const SizedBox(height: 26),
+          // Stats
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text(
-                user['name'] ?? defaultName,
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              if (user['verificado'] == true) ...[
-                const SizedBox(width: 6),
-                const Icon(Icons.verified, color: Colors.blue, size: 18),
-              ],
+              _buildStatItem('Seguidores', user['followers']?.toString() ?? followersDefault, center: true),
+              _buildStatItem('Siguiendo', user['following']?.toString() ?? followingDefault, center: true),
+              _buildStatItem('Escuchas', user['totalPlays']?.toString() ?? totalPlaysDefault, center: true),
             ],
           ),
-          // Username
-     
-          // Descripción
-          if ((user['descripcion'] ?? description).toString().isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 8),
-              child: Text(
-                user['descripcion'] ?? description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white70,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
+          const SizedBox(height: 16),
           // Botones ocupando todo el ancho
           if (isCurrentUser)
             Row(
@@ -196,7 +202,7 @@ class ProfileHeader extends StatelessWidget {
         Text(
           _formatNumber(value),
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),

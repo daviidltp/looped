@@ -19,8 +19,8 @@ class FriendDescription extends StatelessWidget {
       child: Text(
         description,
         style: const TextStyle(
-          color: Colors.white70,
-          fontSize: 14,
+          color: Colors.white,
+          fontSize: 16,
           height: 1.4,
         ),
       ),

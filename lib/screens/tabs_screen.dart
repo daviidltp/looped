@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'search_friends_screen.dart';
 import '../services/auth_service.dart';
 import '../data/users_data.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
@@ -61,15 +63,18 @@ class _TabsScreenState extends State<TabsScreen> {
     ),
   ];
 
-  final List<_NavBarItemData> _navBarItems = const [
+  final List<_NavBarItemData> _navBarItems = [
     _NavBarItemData(
-      icon: Icons.home,
+      filledIcon: PhosphorIcons.house(PhosphorIconsStyle.fill),
+      outlinedIcon: PhosphorIcons.house(PhosphorIconsStyle.regular),
     ),
     _NavBarItemData(
-      icon: Icons.search,
+      filledIcon: PhosphorIcons.magnifyingGlass(PhosphorIconsStyle.fill),
+      outlinedIcon: PhosphorIcons.magnifyingGlass(PhosphorIconsStyle.regular),
     ),
     _NavBarItemData(
-      icon: Icons.person,
+      filledIcon: PhosphorIcons.user(PhosphorIconsStyle.fill),
+      outlinedIcon: PhosphorIcons.user(PhosphorIconsStyle.regular),
     ),
   ];
 
@@ -153,7 +158,8 @@ class _TabsScreenState extends State<TabsScreen> {
                             }
                             return Expanded(
                               child: _CustomNavBarItem(
-                                icon: item.icon,
+                                filledIcon: item.filledIcon,
+                                outlinedIcon: item.outlinedIcon,
                                 selected: _selectedIndex == index,
                                 selectedColor: selectedColor,
                                 splashColor: splashColor,
@@ -178,12 +184,14 @@ class _TabsScreenState extends State<TabsScreen> {
 }
 
 class _NavBarItemData {
-  final IconData icon;
-  const _NavBarItemData({required this.icon});
+  final IconData filledIcon;
+  final IconData outlinedIcon;
+  const _NavBarItemData({required this.filledIcon, required this.outlinedIcon});
 }
 
 class _CustomNavBarItem extends StatelessWidget {
-  final IconData icon;
+  final IconData filledIcon;
+  final IconData outlinedIcon;
   final bool selected;
   final Color selectedColor;
   final Color splashColor;
@@ -192,7 +200,8 @@ class _CustomNavBarItem extends StatelessWidget {
   final BorderRadius borderRadius;
 
   const _CustomNavBarItem({
-    required this.icon,
+    required this.filledIcon,
+    required this.outlinedIcon,
     required this.selected,
     required this.selectedColor,
     required this.splashColor,
@@ -203,7 +212,6 @@ class _CustomNavBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color iconBgColor = selected ? selectedColor : Colors.transparent;
     final Color iconColor = selected ? Colors.white : unselectedColor;
 
     return Material(
@@ -219,11 +227,11 @@ class _CustomNavBarItem extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: iconBgColor,
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              icon,
+              selected ? filledIcon : outlinedIcon,
               color: iconColor,
               size: 28,
             ),

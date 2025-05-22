@@ -93,6 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         backgroundColor: Colors.black,
         elevation: 0,
         title: Text(
@@ -105,9 +106,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.more_horiz, color: Colors.white),
-            onPressed: () {},
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () {},
+            ),
           ),
         ],
       ),
@@ -136,10 +140,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 32),
                       if (formattedTracks.isNotEmpty) ...[
-                        PinnedSong(song: formattedTracks[0]),
+                        PinnedSong(
+                          song: formattedTracks[0],
+                          user: widget.user,
+                        ),
                         const SizedBox(height: 32),
                       ],
-                      WeeklyLoops(songs: formattedTracks),
+                      WeeklyLoops(
+                        songs: formattedTracks,
+                        user: widget.user,
+                      ),
                     ],
                   ),
                 ),

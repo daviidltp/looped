@@ -47,17 +47,12 @@ class NavigationUtils {
           user: user,
         ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(0.0, 1.0);
-          const end = Offset.zero;
-          final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeInOut));
-          final offsetAnimation = animation.drive(tween);
-          
-          return SlideTransition(
-            position: offsetAnimation,
+          return FadeTransition(
+            opacity: animation,
             child: child,
           );
         },
-        transitionDuration: const Duration(milliseconds: 200),
+        transitionDuration: const Duration(milliseconds: 300),
         fullscreenDialog: true,
       ),
     );
