@@ -63,31 +63,61 @@ class _FriendCarouselState extends State<FriendCarousel> {
       decoration: const BoxDecoration(
         color: Colors.transparent,
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (widget.description != null && widget.description!.isNotEmpty)
             FriendDescription(description: widget.description!),
-          FriendCarouselElement(songs: widget.songs),
-          const SizedBox(height: 16),
+          
+          FriendCarouselElement(songs: widget.songs, currentIndex: _currentIndex, onPageChanged: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          }),
+          const SizedBox(height: 0),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(widget.songs.length, (index) {
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: _currentIndex == index ? 12 : 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: _currentIndex == index ? Colors.white : Colors.white38,
-                  borderRadius: BorderRadius.circular(4),
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 24.0, top: 4.0, bottom: 8.0),
+                child: FriendCarouselIndicator(
+                  currentIndex: _currentIndex,
+                  length: widget.songs.length + 1,
                 ),
-              );
-            }),
+              ),
+            ],
           ),
         ],
       ),
+    );
+  }
+}
+
+class FriendCarouselIndicator extends StatelessWidget {
+  final int currentIndex;
+  final int length;
+
+  const FriendCarouselIndicator({
+    Key? key,
+    required this.currentIndex,
+    required this.length,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: List.generate(length, (index) {
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          width: currentIndex == index ? 12 : 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: currentIndex == index ? Colors.white : Colors.white38,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        );
+      }),
     );
   }
 }

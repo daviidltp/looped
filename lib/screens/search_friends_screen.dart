@@ -81,6 +81,7 @@ class _SearchFriendsScreenState extends State<SearchFriendsScreen> with Automati
         backgroundColor: Colors.transparent,
         elevation: 0,
         toolbarHeight: 80,
+        automaticallyImplyLeading: false,
         title: Padding(
           padding: const EdgeInsets.only(top: 16),
           child: Container(

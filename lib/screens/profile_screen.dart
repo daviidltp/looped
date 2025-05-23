@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../components/profile/profile_header.dart';
 import '../components/profile/pinned_song.dart';
-import '../components/profile/weekly_loops.dart';
+import '../components/home/friend_carousel.dart';
 import '../services/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -146,9 +147,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 32),
                       ],
-                      WeeklyLoops(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.loop, color: Colors.white, size: 24),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Últimos bucles de la semana",
+                            style: GoogleFonts.raleway(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                      FriendCarousel(
                         songs: formattedTracks,
-                        user: widget.user,
+                        profilePicUrl: widget.user['profilePicUrl'] ?? '',
+                        name: widget.user['username'] ?? '',
+                        description: null,
                       ),
                     ],
                   ),

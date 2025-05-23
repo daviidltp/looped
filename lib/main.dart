@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:looped/screens/detail/loop_auth_background.dart';
+import 'package:looped/screens/loop_auth_background.dart';
 import 'app_theme.dart';
 import 'screens/spotify_auth_screen.dart';
 import 'screens/tabs_screen.dart';

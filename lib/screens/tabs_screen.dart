@@ -4,7 +4,7 @@ import 'profile_screen.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui';
 import 'package:flutter/services.dart';
-import 'search_friends_screen.dart';
+import 'upload_post.dart';
 import '../services/auth_service.dart';
 import '../data/users_data.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -48,7 +48,7 @@ class _TabsScreenState extends State<TabsScreen> {
 
   List<Widget> get _pages => [
     const HomeTab(),
-    const SearchFriendsScreen(),
+    const UploadPostScreen(),
     Builder(
       builder: (context) {
         final myuser = usersData.firstWhere(
@@ -69,8 +69,8 @@ class _TabsScreenState extends State<TabsScreen> {
       outlinedIcon: PhosphorIcons.house(PhosphorIconsStyle.regular),
     ),
     _NavBarItemData(
-      filledIcon: PhosphorIcons.magnifyingGlass(PhosphorIconsStyle.fill),
-      outlinedIcon: PhosphorIcons.magnifyingGlass(PhosphorIconsStyle.regular),
+      filledIcon: PhosphorIcons.uploadSimple(PhosphorIconsStyle.fill),
+      outlinedIcon: PhosphorIcons.uploadSimple(PhosphorIconsStyle.regular),
     ),
     _NavBarItemData(
       filledIcon: PhosphorIcons.user(PhosphorIconsStyle.fill),

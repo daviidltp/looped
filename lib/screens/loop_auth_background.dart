@@ -67,7 +67,7 @@ class AuthLoopBackgroundState extends State<AuthLoopBackground> with SingleTicke
               return Transform.translate(
                 offset: Offset(0, _animation1.value),
                 child: Opacity(
-                  opacity: 0.1,
+                  opacity: 0.3,
                   child: Container(
                     height: screenHeight - 12,
                     decoration: const BoxDecoration(
@@ -89,7 +89,7 @@ class AuthLoopBackgroundState extends State<AuthLoopBackground> with SingleTicke
               return Transform.translate(
                 offset: Offset(0, _animation2.value),
                 child: Opacity(
-                  opacity: 0.1,
+                  opacity: 0.3,
                   child: Container(
                     height: screenHeight - 12,
                     decoration: const BoxDecoration(
@@ -105,6 +105,23 @@ class AuthLoopBackgroundState extends State<AuthLoopBackground> with SingleTicke
             },
           ),
           // Gradient overlay
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black,         // Arriba negro
+                  Colors.transparent,   // Centro transparente
+                  Colors.transparent,   // Centro transparente
+                  Colors.black,         // Abajo negro
+                ],
+                stops: [0.0, 0.5, 0.5, 1.0], // Ajusta estos valores para controlar el tamaño de la zona transparente
+              ),
+            ),
+          ),
         ],
       ),
     );

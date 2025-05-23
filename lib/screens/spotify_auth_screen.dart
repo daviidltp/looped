@@ -6,9 +6,11 @@ import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'tabs_screen.dart';
 import '../services/auth_service.dart';
-import '../widgets/spotify_auth_webview.dart';
+import '../screens/spotify_auth_webview.dart';
 import '../services/track_service.dart';
-import '../screens/detail/loop_auth_background.dart';
+import 'loop_auth_background.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../utils/navigation_utils.dart';
 
 class SpotifyAuthScreen extends StatefulWidget {
   final VoidCallback? onAuth;
@@ -40,21 +42,6 @@ class _SpotifyAuthScreenState extends State<SpotifyAuthScreen> {
         systemNavigationBarIconBrightness: Brightness.light,
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        systemNavigationBarColor: Color(0x00000000),
-        systemNavigationBarDividerColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.light,
-      ),
-    );
-    _tokenController.dispose();
-    super.dispose();
   }
 
   // Check if already authenticated
@@ -111,6 +98,7 @@ class _SpotifyAuthScreenState extends State<SpotifyAuthScreen> {
                 });
               } else if (code != null && returnedState == _state) {
                 print('Código obtenido: $code');
+                Navigator.of(context).pop();
                 _processAuthCode(code);
                 setState(() {
                   _showWebView = false;
@@ -177,6 +165,23 @@ class _SpotifyAuthScreenState extends State<SpotifyAuthScreen> {
     }
   }
 
+  Future<void> _openWebView() async {
+    await NavigationUtils.pushCupertino(
+      context,
+      SpotifyAuthWebView(
+        controller: _webViewController!,
+        onClose: () {
+          Navigator.of(context).pop();
+          setState(() {
+            _showWebView = false;
+            _isLoading = false;
+          });
+        },
+        isLoading: _isLoading,
+      ),
+    );
+  }
+
   Future<void> _authenticateWithSpotify() async {
     setState(() {
       _isLoading = true;
@@ -199,6 +204,7 @@ class _SpotifyAuthScreenState extends State<SpotifyAuthScreen> {
       setState(() {
         _showWebView = true;
       });
+      _openWebView();
     } catch (e) {
       setState(() {
         _errorMessage = 'Error durante la autenticación: $e';
@@ -263,257 +269,321 @@ class _SpotifyAuthScreenState extends State<SpotifyAuthScreen> {
               : SafeArea(
                   child: Column(
                     children: [
-                      // Top container with logo and text
-                      Container(
-                        padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
-                        child: Column(
-                          children: [
-                            // Logo with 3D effect
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                // Shadow
-                                Container(
-                                  width: circleSize * 2.8,
-                                  height: circleSize * 2,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.6),
-                                        blurRadius: 60,
-                                        spreadRadius: 30,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                // Larger logo for the glow effect
-                                Container(
-                                  width: circleSize * 4.4,
-                                  height: circleSize * 2.2,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.transparent,
-                                  ),
-                                  child: Center(
-                                    child: ClipOval(
-                                      child: ImageFiltered(
-                                        imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                                        child: ColorFiltered(
-                                          colorFilter: const ColorFilter.mode(Color.fromARGB(60, 255, 255, 255), BlendMode.srcIn),
-                                          child: Image.asset(
-                                            'assets/logo_final.png',
-                                            width: logoSize * 2.4,
-                                            height: logoSize * 2.4,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) => Container(
-                                              width: logoSize,
-                                              height: logoSize,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                gradient: LinearGradient(
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                  colors: [
-                                                    Colors.grey.shade800,
-                                                    Colors.black,
-                                                  ],
-                                                ),
-                                              ),
-                                              child: const Icon(
-                                                Icons.music_note,
-                                                size: 80,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                // Main logo
-                                Container(
-                                  width: circleSize * 2.8,
-                                  height: circleSize * 1.2,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.transparent,
-                                  ),
-                                  child: Center(
-                                    child: ClipOval(
-                                      child: Image.asset(
-                                        'assets/logo_final.png',
-                                        width: logoSize * 1.8,
-                                        height: logoSize * 1.8,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => Container(
-                                          width: logoSize,
-                                          height: logoSize,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            gradient: LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                              colors: [
-                                                Colors.grey.shade800,
-                                                Colors.black,
-                                              ],
-                                            ),
-                                          ),
-                                          child: const Icon(
-                                            Icons.music_note,
-                                            size: 80,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            // Title with enhanced effect
-                            ShaderMask(
-                              shaderCallback: (Rect bounds) {
-                                return const LinearGradient(
-                                  colors: [
-                                    Color.fromARGB(255, 255, 255, 255),
-                                    Color.fromARGB(255, 220, 220, 220),
-                                    Color.fromARGB(255, 255, 255, 255),
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  stops: [0.0, 0.5, 1.0],
-                                ).createShader(bounds);
-                              },
-                              child: const Text(
-                                'Looped',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 64,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 4,
-                                  height: 0.9,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                      // Logo
+                      Padding(
+                        padding: const EdgeInsets.only(top: 150.0,),
+                        child: LoopedLogo(logoSize: logoSize, circleSize: circleSize),
                       ),
-                      
+                      const SizedBox(height: 0),
+                      // Título y slogan
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        child: const LoopedTitle(),
+                      ),
+                      const SizedBox(height: 32),
                       // Error message if any
                       if (_errorMessage != null)
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.red.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.red.withOpacity(0.3)),
-                            ),
-                            child: Text(
-                              _errorMessage!,
-                              style: const TextStyle(
-                                color: Colors.red,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      
+                        ErrorMessage(message: _errorMessage!),
                       const Spacer(),
-                      
                       // Bottom section with button
-                      Container(
-                        height: 148,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF111111),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(32),
-                            topRight: Radius.circular(32),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            top: 24,
-                            bottom: 48,
-                            left: 24,
-                            right: 24
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (!_isLoading)
-                                Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(32),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.2),
-                                        blurRadius: 20,
-                                        spreadRadius: 5,
-                                        offset: const Offset(0, 10),
-                                      ),
-                                    ],
-                                  ),
-                                  child: ElevatedButton(
-                                    onPressed: _authenticateWithSpotify,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      foregroundColor: Colors.black,
-                                      elevation: 0,
-                                      shadowColor: Colors.transparent,
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 16,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(32),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                          'assets/icons/spotify.svg',
-                                          semanticsLabel: 'Spotify Logo',
-                                          height: 28,
-                                          width: 28,
-                                          colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        const Text(
-                                          'Conectar con Spotify',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w700,
-                                            letterSpacing: 0.5,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              if (_isLoading && !_showWebView)
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 24.0),
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 3,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
+                      BottomSection(
+                        isLoading: _isLoading,
+                        showWebView: _showWebView,
+                        onAuthPressed: _authenticateWithSpotify,
                       ),
                     ],
                   ),
                 ),
+        ],
+      ),
+    );
+  }
+}
+
+// Nuevo widget: Logo con efectos
+class LoopedLogo extends StatelessWidget {
+  final double logoSize;
+  final double circleSize;
+  const LoopedLogo({super.key, required this.logoSize, required this.circleSize});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Sombra
+        Container(
+          width: circleSize * 0.75,
+          height: circleSize * 0.75,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: const Color.fromARGB(255, 0, 0, 0).withOpacity(1),
+                blurRadius: 60,
+                spreadRadius: 30,
+              ),
+            ],
+          ),
+        ),
+        // Glow
+        Container(
+          width: circleSize * 2.4,
+          height: circleSize * 1.3,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.transparent,
+          ),
+          child: Center(
+            child: ClipOval(
+              child: ImageFiltered(
+                imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: ColorFiltered(
+                  colorFilter: const ColorFilter.mode(Color.fromARGB(0, 255, 255, 255), BlendMode.srcIn),
+                  child: Image.asset(
+                    'assets/logo_final.png',
+                    width: logoSize * 1.2,
+                    height: logoSize * 1.2,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: logoSize,
+                      height: logoSize,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Colors.grey.shade800,
+                            Colors.black,
+                          ],
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.music_note,
+                        size: 80,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        // Logo principal
+        Container(
+          width: circleSize * 1.6,
+          height: circleSize * 0.8,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.transparent,
+          ),
+          child: Center(
+            child: ClipOval(
+              child: Image.asset(
+                'assets/logo_white.png',
+                width: logoSize * 1.2,
+                height: logoSize * 1.2,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: logoSize,
+                  height: logoSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.grey.shade800,
+                        Colors.black,
+                      ],
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.music_note,
+                    size: 80,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Nuevo widget: Título y slogan
+class LoopedTitle extends StatelessWidget {
+  const LoopedTitle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          'looped',
+          style: GoogleFonts.raleway(
+            color: Colors.white,
+            fontSize: 56,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 4,
+            height: 1.0,
+          ),
+        ),
+        const SizedBox(height: 10),
+        const Text(
+          'Tus bucles de la semana.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            height: 1.4,
+          ),
+        ),
+        const Text(
+          'Otra vez. Y otra.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            height: 1.4,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Nuevo widget: Mensaje de error
+class ErrorMessage extends StatelessWidget {
+  final String message;
+  const ErrorMessage({super.key, required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.red.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.red.withOpacity(0.3)),
+        ),
+        child: Text(
+          message,
+          style: const TextStyle(
+            color: Colors.red,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+}
+
+// Nuevo widget: Botón de autenticación
+class SpotifyAuthButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  const SpotifyAuthButton({super.key, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 20,
+            spreadRadius: 5,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(
+            vertical: 16,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(32),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              'assets/icons/spotify.svg',
+              semanticsLabel: 'Spotify Logo',
+              height: 28,
+              width: 28,
+              colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Conectar con Spotify',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Nuevo widget: Sección inferior
+class BottomSection extends StatelessWidget {
+  final bool isLoading;
+  final bool showWebView;
+  final VoidCallback onAuthPressed;
+  const BottomSection({
+    super.key,
+    required this.isLoading,
+    required this.showWebView,
+    required this.onAuthPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        top: 24,
+        bottom: 48,
+        left: 24,
+        right: 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (!isLoading)
+            SpotifyAuthButton(onPressed: onAuthPressed),
+          if (isLoading && !showWebView)
+            const Padding(
+              padding: EdgeInsets.only(top: 24.0),
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 3,
+              ),
+            ),
         ],
       ),
     );

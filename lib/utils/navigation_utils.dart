@@ -20,6 +20,12 @@ class NavigationUtils {
     );
   }
 
+  static Future<T?> pushCupertino<T>(BuildContext context, Widget page) {
+    return Navigator.of(context).push<T>(
+      CupertinoPageRoute(builder: (_) => page),
+    );
+  }
+
   static void openCommentsScreen(
     BuildContext context, {
     required String username,
@@ -54,6 +60,18 @@ class NavigationUtils {
         },
         transitionDuration: const Duration(milliseconds: 300),
         fullscreenDialog: true,
+      ),
+    );
+  }
+
+  /// Navegación SIN animación (instantánea)
+  static Future<T?> pushNoAnimation<T>(BuildContext context, Widget page) {
+    return Navigator.of(context).push<T>(
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => page,
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
+        opaque: true,
       ),
     );
   }

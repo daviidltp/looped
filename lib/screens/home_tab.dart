@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../components/home/friend_header.dart';
 import '../components/home/friend_carousel.dart';
 import '../components/home/friend_comments_section.dart';
@@ -14,6 +15,7 @@ import '../screens/detail/friend_songs_details_screen.dart';
 import '../utils/navigation_utils.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:async';
+import '../screens/search_friends_screen.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -31,6 +33,8 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +47,12 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
         systemNavigationBarIconBrightness: Brightness.light,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadTrackData() async {
@@ -82,118 +92,138 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
       );
     }
 
-    return RefreshIndicator(
-      onRefresh: _loadTrackData,
-      child: Stack(
-        children: [
-          ListView(
-            children: [
-              // App Header
-              Container(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      
-                        Image.asset(
-                          'assets/logo_final.png',
-                          height: 40,
-                        ),
-                      
-                      const SizedBox(width: 12),
-                      const Text(
-                        'looped',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: RefreshIndicator(
+        onRefresh: _loadTrackData,
+        child: Stack(
+          children: [
+            CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                SliverAppBar(
+                  backgroundColor: Colors.black,
+                  floating: true,
+                  snap: true,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  flexibleSpace: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const SizedBox(width: 40),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset(
+                                'assets/logo_final.png',
+                                height: 40,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                "looped",
+                                style: GoogleFonts.raleway(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.search, color: Colors.white, size: 28),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => const SearchFriendsScreen()),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-              // Section Title
-              
-              // Posts List
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: postsData.length,
-                itemBuilder: (context, i) {
-                  final post = postsData[i];
-                  final user = usersData.firstWhere(
-                    (u) => u['username'] == post['user'],
-                    orElse: () => {},
-                  );
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 0.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (user.isNotEmpty)
-                          InkWell(
-                            splashFactory: NoSplash.splashFactory,
-                            highlightColor: Colors.transparent,
-                            onTap: () => NavigationUtils.openProfileScreen(context, user),
-                            child: UserHeader(
-                              username: user['username'],
-                              name: user['name'],
-                              verificado: user['verificado'],
-                              profilePic: user['profilePic'],
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, i) {
+                      final post = postsData[i];
+                      final user = usersData.firstWhere(
+                        (u) => u['username'] == post['user'],
+                        orElse: () => {},
+                      );
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 0.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (user.isNotEmpty)
+                              InkWell(
+                                splashFactory: NoSplash.splashFactory,
+                                highlightColor: Colors.transparent,
+                                onTap: () => NavigationUtils.openProfileScreen(context, user),
+                                child: UserHeader(
+                                  username: user['username'],
+                                  name: user['name'],
+                                  verificado: user['verificado'],
+                                  profilePic: user['profilePic'],
+                                ),
+                              ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: InkWell(
+                                splashFactory: NoSplash.splashFactory,
+                                highlightColor: Colors.transparent,
+                                onTap: () => NavigationUtils.openSongsDetailScreen(
+                                  context,
+                                  songs: _topSongsList[i % _topSongsList.length],
+                                  user: user,
+                                ),
+                                child: FriendCarousel(
+                                  songs: _topSongsList[i % _topSongsList.length],
+                                  description: post['description'],
+                                  profilePicUrl: user['profilePic'],
+                                  name: user['username'],
+                                ),
+                              ),
                             ),
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: InkWell(
-                            splashFactory: NoSplash.splashFactory,
-                            highlightColor: Colors.transparent,
-                            onTap: () => NavigationUtils.openSongsDetailScreen(
-                              context,
-                              songs: _topSongsList[i % _topSongsList.length],
-                              user: user,
+                            InkWell(
+                              splashFactory: NoSplash.splashFactory,
+                              highlightColor: Colors.transparent,
+                              onTap: () => NavigationUtils.openCommentsScreen(
+                                context,
+                                username: post['user'],
+                                songs: _topSongsList[i % _topSongsList.length],
+                                comments: List<Map<String, dynamic>>.from(post['comments']),
+                              ),
+                              child: FriendCommentsSection(
+                                comments: List<Map<String, String>>.from(post['comments']),
+                                username: post['user'],
+                                songs: _topSongsList[i % _topSongsList.length],
+                              ),
                             ),
-                            child: FriendCarousel(
-                              songs: _topSongsList[i % _topSongsList.length],
-                              description: post['description'],
-                              profilePicUrl: user['profilePic'],
-                              name: user['username'],
-                            ),
-                          ),
+                          ],
                         ),
-                        InkWell(
-                          splashFactory: NoSplash.splashFactory,
-                          highlightColor: Colors.transparent,
-                          onTap: () => NavigationUtils.openCommentsScreen(
-                            context,
-                            username: post['user'],
-                            songs: _topSongsList[i % _topSongsList.length],
-                            comments: List<Map<String, dynamic>>.from(post['comments']),
-                          ),
-                          child: FriendCommentsSection(
-                            comments: List<Map<String, String>>.from(post['comments']),
-                            username: post['user'],
-                            songs: _topSongsList[i % _topSongsList.length],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-          if (_isRefreshing)
-            const Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: LinearProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
+                      );
+                    },
+                    childCount: postsData.length,
+                  ),
+                ),
+              ],
             ),
-        ],
+            if (_isRefreshing)
+              const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: LinearProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
