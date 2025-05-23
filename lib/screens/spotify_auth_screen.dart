@@ -8,6 +8,7 @@ import 'tabs_screen.dart';
 import '../services/auth_service.dart';
 import '../widgets/spotify_auth_webview.dart';
 import '../services/track_service.dart';
+import '../screens/detail/loop_auth_background.dart';
 
 class SpotifyAuthScreen extends StatefulWidget {
   final VoidCallback? onAuth;
@@ -243,33 +244,10 @@ class _SpotifyAuthScreenState extends State<SpotifyAuthScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image with rotation
-          Transform.translate(
-            offset: Offset(0, 0),
-            child: Transform.rotate(
-              angle: 45 * pi / 180,
-              child: Transform.scale(
-                scale: 6.0,
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 3,
-                  height: MediaQuery.of(context).size.height * 3,
-                  child: ImageFiltered(
-                    imageFilter: ImageFilter.blur(sigmaX: 2, sigmaY:0),
-                    child: Image.asset(
-                      'assets/background.jpg',
-                      alignment: Alignment.center,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // Black overlay
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: Colors.black.withOpacity(0.85),
-          ),
+          // Replace the old background with AuthLoopBackground
+          const AuthLoopBackground(),
+          
+
           // Content
           _showWebView
               ? SpotifyAuthWebView(
@@ -302,18 +280,62 @@ class _SpotifyAuthScreenState extends State<SpotifyAuthScreen> {
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(1),
+                                        color: Colors.black.withOpacity(0.6),
                                         blurRadius: 60,
                                         spreadRadius: 30,
                                       ),
                                     ],
                                   ),
-
+                                ),
+                                // Larger logo for the glow effect
+                                Container(
+                                  width: circleSize * 4.4,
+                                  height: circleSize * 2.2,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.transparent,
+                                  ),
+                                  child: Center(
+                                    child: ClipOval(
+                                      child: ImageFiltered(
+                                        imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                        child: ColorFiltered(
+                                          colorFilter: const ColorFilter.mode(Color.fromARGB(60, 255, 255, 255), BlendMode.srcIn),
+                                          child: Image.asset(
+                                            'assets/logo_final.png',
+                                            width: logoSize * 2.4,
+                                            height: logoSize * 2.4,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) => Container(
+                                              width: logoSize,
+                                              height: logoSize,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                gradient: LinearGradient(
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                  colors: [
+                                                    Colors.grey.shade800,
+                                                    Colors.black,
+                                                  ],
+                                                ),
+                                              ),
+                                              child: const Icon(
+                                                Icons.music_note,
+                                                size: 80,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                                 // Main logo
                                 Container(
-                                  width: circleSize * 3.6,
-                                  height: circleSize * 1.6,
+                                  width: circleSize * 2.8,
+                                  height: circleSize * 1.2,
                                   decoration: const BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: Colors.transparent,
@@ -322,8 +344,8 @@ class _SpotifyAuthScreenState extends State<SpotifyAuthScreen> {
                                     child: ClipOval(
                                       child: Image.asset(
                                         'assets/logo_final.png',
-                                        width: logoSize * 2.4,
-                                        height: logoSize * 2.4,
+                                        width: logoSize * 1.8,
+                                        height: logoSize * 1.8,
                                         fit: BoxFit.cover,
                                         errorBuilder: (context, error, stackTrace) => Container(
                                           width: logoSize,
@@ -406,72 +428,87 @@ class _SpotifyAuthScreenState extends State<SpotifyAuthScreen> {
                       const Spacer(),
                       
                       // Bottom section with button
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 48, left: 24, right: 24),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (!_isLoading)
-                              Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(32),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      blurRadius: 20,
-                                      spreadRadius: 5,
-                                      offset: const Offset(0, 10),
-                                    ),
-                                  ],
-                                ),
-                                child: ElevatedButton(
-                                  onPressed: _authenticateWithSpotify,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    foregroundColor: Colors.black,
-                                    elevation: 0,
-                                    shadowColor: Colors.transparent,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(32),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/icons/spotify.svg',
-                                        semanticsLabel: 'Spotify Logo',
-                                        height: 28,
-                                        width: 28,
-                                        colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      const Text(
-                                        'Conectar con Spotify',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w700,
-                                          letterSpacing: 0.5,
-                                        ),
+                      Container(
+                        height: 148,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF111111),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(32),
+                            topRight: Radius.circular(32),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            top: 24,
+                            bottom: 48,
+                            left: 24,
+                            right: 24
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (!_isLoading)
+                                Container(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(32),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.2),
+                                        blurRadius: 20,
+                                        spreadRadius: 5,
+                                        offset: const Offset(0, 10),
                                       ),
                                     ],
                                   ),
+                                  child: ElevatedButton(
+                                    onPressed: _authenticateWithSpotify,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      foregroundColor: Colors.black,
+                                      elevation: 0,
+                                      shadowColor: Colors.transparent,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(32),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                          'assets/icons/spotify.svg',
+                                          semanticsLabel: 'Spotify Logo',
+                                          height: 28,
+                                          width: 28,
+                                          colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        const Text(
+                                          'Conectar con Spotify',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            if (_isLoading && !_showWebView)
-                              const Padding(
-                                padding: EdgeInsets.only(top: 24.0),
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 3,
+                              if (_isLoading && !_showWebView)
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 24.0),
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 3,
+                                  ),
                                 ),
-                              ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],

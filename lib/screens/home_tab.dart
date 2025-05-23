@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../components/home/friend_header.dart';
-import '../components/home/friend_top_songs_row.dart';
+import '../components/home/friend_carousel.dart';
 import '../components/home/friend_comments_section.dart';
 import '../screens/comments_screen.dart';
 import '../services/track_service.dart';
@@ -12,6 +12,8 @@ import '../data/users_data.dart'; // para usuarios
 import '../data/posts_data.dart'; // para posts
 import '../screens/detail/friend_songs_details_screen.dart';
 import '../utils/navigation_utils.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'dart:async';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -152,7 +154,7 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
                               songs: _topSongsList[i % _topSongsList.length],
                               user: user,
                             ),
-                            child: FriendTopSongsRow(
+                            child: FriendCarousel(
                               songs: _topSongsList[i % _topSongsList.length],
                               description: post['description'],
                               profilePicUrl: user['profilePic'],

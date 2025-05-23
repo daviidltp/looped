@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'friend_artwork_element.dart';
 import 'friend_description.dart';
+import 'dart:math';
+import 'dart:ui';
+import 'package:palette_generator/palette_generator.dart';
 
-class FriendTopSongsRow extends StatelessWidget {
-  final List<Map<String, String>> songs; // Cada canción debe tener 'image', 'title', 'artist'
+class FriendCarousel extends StatelessWidget {
+  final List<Map<String, String>> songs; // Cada canción debe tener 'image', 'title', 'artist', 'plays'
   final String? description; // Descripción general sobre los bucles
   final String profilePicUrl;
   final String name;
   
-  const FriendTopSongsRow({
+  FriendCarousel({
     super.key, 
     required this.songs,
     this.description,
@@ -23,45 +26,81 @@ class FriendTopSongsRow extends StatelessWidget {
       decoration: const BoxDecoration(
         color: Colors.transparent,
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (description != null && description!.isNotEmpty)
             FriendDescription(description: description!),
-          Row(
-            children: [
-              Expanded(
-                child: Hero(
-                  tag: 'song_hero_${name}_${songs[0]['id'] ?? songs[0]['title']}',
-                  child: Material(
-                    color: Colors.transparent,
-                    child: FriendArtworkElement(
-                      imageUrl: songs[0]['image'] ?? '',
-                      title: songs[0]['title']!,
-                      artist: songs[0]['artist']!,
+          ...songs.map((song) => Padding(
+            padding: const EdgeInsets.only(bottom: 0),
+            child: InkWell(
+              onTap: () {
+                // TODO: Handle tap on song
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(0),
+                ),
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 130,
+                      height: 130,
+                      child: Hero(
+                        tag: 'song_hero_${name}_${song['id'] ?? song['title']}',
+                        child: Material(
+                          color: const Color.fromARGB(255, 0, 0, 0),
+                          child: Image.network(
+                            song['image'] ?? '',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            song['title']!,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            song['artist']!,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.white70,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            '${song['plays'] ?? '0'} reproducciones',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.white60,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FriendArtworkElement(
-                  imageUrl: songs[1]['image'] ?? '',
-                  title: songs[1]['title']!,
-                  artist: songs[1]['artist']!,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FriendArtworkElement(
-                  imageUrl: songs[2]['image'] ?? '',
-                  title: songs[2]['title']!,
-                  artist: songs[2]['artist']!,
-                ),
-              ),
-            ],
-          ),
+            ),
+          )).toList(),
         ],
       ),
     );

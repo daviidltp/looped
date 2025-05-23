@@ -16,8 +16,12 @@ class SongCommentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Colors.transparent,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Row(
         children: [
           ClipRRect(
@@ -41,6 +45,8 @@ class SongCommentSection extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   artist,
@@ -48,6 +54,8 @@ class SongCommentSection extends StatelessWidget {
                     color: Colors.grey[400],
                     fontSize: 16,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Row(

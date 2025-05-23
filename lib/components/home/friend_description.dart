@@ -12,7 +12,7 @@ class FriendDescription extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
       ),
