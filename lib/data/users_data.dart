@@ -9,6 +9,7 @@ final List<Map<String, dynamic>> usersData = [
     'totalPlays': 8500,
     'descripcion': 'Technoking of Tesla, Imperator of Mars',
     'isFriend': false,
+    'labels': ['Techno', 'Electronic', 'Ambient'],
   },
   {
     'username': 'taylorswift13',
@@ -20,6 +21,7 @@ final List<Map<String, dynamic>> usersData = [
     'totalPlays': 9200,
     'descripcion': 'Singer-songwriter and storyteller',
     'isFriend': false,
+    'labels': ['Pop', 'Country', 'Folk'],
   },
   {
     'username': 'Cristiano',
@@ -31,6 +33,7 @@ final List<Map<String, dynamic>> usersData = [
     'totalPlays': 7800,
     'descripcion': 'Professional footballer',
     'isFriend': false,
+    'labels': ['Hip Hop', 'Reggaeton', 'Pop'],
   },
   {
     'username': 'Oprah',
@@ -42,6 +45,7 @@ final List<Map<String, dynamic>> usersData = [
     'totalPlays': 6500,
     'descripcion': 'Media executive, actress, talk show host',
     'isFriend': false,
+    'labels': ['Soul', 'R&B', 'Gospel'],
   },
   {
     'username': 'BarackObama',
@@ -53,6 +57,7 @@ final List<Map<String, dynamic>> usersData = [
     'totalPlays': 8900,
     'descripcion': 'Dad, husband, President, citizen.',
     'isFriend': false,
+    'labels': ['Jazz', 'Soul', 'R&B'],
   },
   {
     'username': 'rihanna',
@@ -64,6 +69,7 @@ final List<Map<String, dynamic>> usersData = [
     'totalPlays': 9500,
     'descripcion': 'badgalriri',
     'isFriend': false,
+    'labels': ['R&B', 'Pop', 'Dancehall'],
   },
   {
     'username': 'katyperry',
@@ -75,6 +81,7 @@ final List<Map<String, dynamic>> usersData = [
     'totalPlays': 8200,
     'descripcion': 'Love. Light.',
     'isFriend': false,
+    'labels': ['Pop', 'Dance', 'Electropop'],
   },
   {
     'username': 'ladygaga',
@@ -86,18 +93,20 @@ final List<Map<String, dynamic>> usersData = [
     'totalPlays': 8800,
     'descripcion': 'Interscope Records',
     'isFriend': false,
+    'labels': ['Pop', 'Dance', 'Electronic'],
   },
   // Usuarios no famosos añadidos:
   {
     'username': 'david',
     'name': 'David',
     'verificado': false,
-    'profilePic': 'https://unavatar.io/twitter/javiig_p_',
+    'profilePic': 'https://unavatar.io/x/DanikRM_',
     'followers': 120,
     'following': 80,
     'totalPlays': 3500,
     'descripcion': 'Creador de la app',
     'isFriend': false,
+    'labels': ['Lo-Fi', 'Pop', 'Cumbia'],
   },
   {
     'username': 'angelgallego',
@@ -109,6 +118,7 @@ final List<Map<String, dynamic>> usersData = [
     'totalPlays': 2800,
     'descripcion': 'Amante de la música indie',
     'isFriend': false,
+    'labels': ['Indie', 'Rock', 'Alternative'],
   },
   {
     'username': 'abepe1010',
@@ -120,5 +130,6 @@ final List<Map<String, dynamic>> usersData = [
     'totalPlays': 2100,
     'descripcion': 'Descubriendo nuevos loops cada semana',
     'isFriend': false,
+    'labels': ['Lo-Fi', 'Hip Hop', 'Jazz'],
   },
 ];
