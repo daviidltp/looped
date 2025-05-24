@@ -17,6 +17,8 @@ class ProfileHeader extends StatelessWidget {
   final Map<String, dynamic> user;
   final bool? isFriend;
   final VoidCallback? onToggleFollow;
+  final VoidCallback? onEditProfile;
+  final List<String> labels;
 
   const ProfileHeader({
     super.key,
@@ -24,6 +26,8 @@ class ProfileHeader extends StatelessWidget {
     this.isCurrentUser = true,
     this.isFriend,
     this.onToggleFollow,
+    this.onEditProfile,
+    this.labels = const [],
   });
 
   void _navigateToSettings(BuildContext context) {
@@ -39,151 +43,129 @@ class ProfileHeader extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 8),
+      padding: const EdgeInsets.only(top: 32, left: 16, right: 16, bottom: 8),
       decoration: const BoxDecoration(
         color: Colors.transparent,
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Primera fila: Avatar + Nombre y descripción
+          // Avatar centrado
+          Center(
+            child: CircleAvatar(
+              radius: 64,
+              backgroundColor: theme.scaffoldBackgroundColor,
+              child: CircleAvatar(
+                radius: 64,
+                backgroundImage: NetworkImage(user['profilePic'] ?? defaultProfilePicUrl),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Nombre y verificado centrado
           Row(
-            crossAxisAlignment: (user['descripcion'] ?? description).toString().isEmpty 
-                ? CrossAxisAlignment.center 
-                : CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Avatar
-              CircleAvatar(
-                radius: 32,
-                backgroundColor: theme.scaffoldBackgroundColor,
-                child: CircleAvatar(
-                  radius: 32,
-                  backgroundImage: NetworkImage(user['profilePic'] ?? defaultProfilePicUrl),
+              Text(
+                user['name'] ?? defaultName,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-              const SizedBox(width: 16),
-              // Nombre, verificado y descripción
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          user['name'] ?? defaultName,
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        if (user['verificado'] == true) ...[
-                          const SizedBox(width: 6),
-                          const Icon(Icons.verified, color: Colors.blue, size: 20),
-                        ],
-                      ],
-                    ),
-                    if ((user['descripcion'] ?? description).toString().isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
-                          user['descripcion'] ?? description,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.white70,
-                          ),
-                          maxLines: 5,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+              if (user['verificado'] == true) ...[
+                const SizedBox(width: 6),
+                const Icon(Icons.verified, color: Colors.blue, size: 20),
+              ],
             ],
           ),
-          const SizedBox(height: 26),
-          // Stats
+          if ((user['descripcion'] ?? description).toString().isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0),
+              child: Center(
+                // child: Text(
+                //   user['descripcion'] ?? description,
+                //   style: const TextStyle(
+                //     fontSize: 14,
+                //     color: Colors.white70,
+                //   ),
+                //   maxLines: 5,
+                //   textAlign: TextAlign.center,
+                // ),
+              ),
+            ),
+          // Etiquetas debajo de la descripción
+          if (labels.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0, bottom: 4.0),
+              child: SizedBox(
+                width: 320,
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: labels.map((label) => ProfileLabelChip(label: label)).toList(),
+                ),
+              ),
+            ),
+          const SizedBox(height: 20),
+          // Stats centrados
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildStatItem('Seguidores', user['followers']?.toString() ?? followersDefault, center: true),
+              const SizedBox(width: 32),
               _buildStatItem('Siguiendo', user['following']?.toString() ?? followingDefault, center: true),
+              const SizedBox(width: 32),
               _buildStatItem('Escuchas', user['totalPlays']?.toString() ?? totalPlaysDefault, center: true),
             ],
           ),
-          const SizedBox(height: 16),
-          // Botones ocupando todo el ancho
+          const SizedBox(height: 24),
+          // Botón de acción
           if (isCurrentUser)
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(0, 36),
-                      foregroundColor: Colors.white.withOpacity(0.2),
-                    ),
-                    child: Text('Editar perfil', 
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      )
-                    ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {},//onEditProfile,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  minimumSize: const Size(0, 44),
+                ),
+                child: const Text(
+                  'Editar perfil',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => _navigateToSettings(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      side: BorderSide(color: theme.primaryColor.withOpacity(0.7), width: 1.2),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      minimumSize: const Size(0, 36),
-                    ),
-                    child: Text('Ajustes', 
-                      style: TextStyle(
-                        color: theme.primaryColor, 
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      )
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          // Si no es el usuario actual, mostrar botón de seguir/seguir
           if (!isCurrentUser && isFriend != null && onToggleFollow != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: GestureDetector(
-                  onTap: onToggleFollow,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: isFriend! ? Colors.black : Colors.white,
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Text(
-                        isFriend! ? 'Siguiendo' : 'Seguir',
-                        style: TextStyle(
-                          color: isFriend! ? Colors.white : Colors.black,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                        ),
+            SizedBox(
+              width: double.infinity,
+              child: GestureDetector(
+                onTap: onToggleFollow,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: isFriend! ? Colors.black : Colors.white,
+                    border: Border.all(color: Colors.white),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      isFriend! ? 'Siguiendo' : 'Seguir',
+                      style: TextStyle(
+                        color: isFriend! ? Colors.white : Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
                       ),
                     ),
                   ),
@@ -235,5 +217,33 @@ class ProfileHeader extends StatelessWidget {
       double value = number / 1000000;
       return value >= 10 ? '${value.toInt()}M' : '${value.toStringAsFixed(1)}M';
     }
+  }
+}
+
+// Nuevo widget para las etiquetas
+class ProfileLabelChip extends StatelessWidget {
+  final String label;
+  const ProfileLabelChip({super.key, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+      decoration: BoxDecoration(
+        color: theme.primaryColor.withOpacity(0.18),
+        borderRadius: BorderRadius.circular(22),
+        // Sin borde
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.2,
+        ),
+      ),
+    );
   }
 }

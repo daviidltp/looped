@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'song_component.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../home/friend_top_songs_row.dart';
 
 class PinnedSong extends StatelessWidget {
   final Map<String, String> song;
@@ -19,41 +21,62 @@ class PinnedSong extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(0),
+              color: Colors.white.withOpacity(0.07),
+              borderRadius: BorderRadius.circular(16),
             ),
+            padding: const EdgeInsets.all(16),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.push_pin,
-                  size: 14,
-                  color: Colors.grey.shade400,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    song['image'] ?? '',
+                    width: 64,
+                    height: 64,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  'Canción fijada',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade400,
-                    letterSpacing: -0.2,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        song['title'] ?? '',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        song['artist'] ?? '',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.white70,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        song['duration'] != null && song['duration']!.isNotEmpty
+                            ? 'Duración: ${song['duration']}'
+                            : 'Canción destacada',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white54,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 12),
-          SongComponent(
-            imageUrl: song['image']!,
-            title: song['title']!,
-            artist: song['artist']!,
-            plays: song['plays']!,
-            showPlays: false,
-            duration: song['duration'],
-            user: user,
           ),
         ],
       ),
