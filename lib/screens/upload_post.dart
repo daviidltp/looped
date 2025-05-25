@@ -23,10 +23,13 @@ class _UploadPostScreenState extends State<UploadPostScreen> with SingleTickerPr
   bool _uploading = false;
   bool _uploadSuccess = false;
   bool _hideInputs = false;
+  bool _showSuccess = false;
+  bool _slideDown = false;
 
   late final AnimationController _successAnimController;
   late final Animation<double> _successAnim;
 
+  
   @override
   void initState() {
     super.initState();
@@ -92,18 +95,32 @@ class _UploadPostScreenState extends State<UploadPostScreen> with SingleTickerPr
     setState(() {
       _uploading = true;
     });
-    await Future.delayed(const Duration(milliseconds: 2000));
+
+    await Future.delayed(const Duration(seconds: 2));
+
     setState(() {
       _uploading = false;
-      _uploadSuccess = true;
       _hideInputs = true;
     });
-    _successAnimController.forward();
+
+    await Future.delayed(const Duration(milliseconds: 400)); // Duración del fade out
+
+    setState(() {
+      _uploadSuccess = true;
+      _slideDown = true;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 500)); // Duración del deslizamiento
+
+    setState(() {
+      _showSuccess = true;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
+    if (_user == null) {
+      // Show a loading indicator or placeholder while user data is loading
       return const Scaffold(
         backgroundColor: Colors.black,
         body: Center(child: CircularProgressIndicator()),
@@ -117,169 +134,175 @@ class _UploadPostScreenState extends State<UploadPostScreen> with SingleTickerPr
       body: SafeArea(
         child: Stack(
           children: [
-            // LinearProgressIndicator arriba del todo
+            // Indicador de carga
             if (_uploading)
-              const LinearProgressIndicator(
-                backgroundColor: Colors.white12,
-                color: Colors.green,
-                minHeight: 4,
+              const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: LinearProgressIndicator(
+                  backgroundColor: Colors.white12,
+                  color: Colors.green,
+                  minHeight: 4,
+                ),
               ),
-            // Contenido principal
-            Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Espacio para el Lottie y texto de éxito
-                        if (_uploadSuccess) ...[
-                          const SizedBox(height: 32),
-                          Center(
-                            child: SizedBox(
-                              width: 120,
-                              height: 120,
-                              child: Lottie.asset(
-                                'assets/success2.json',
-                                repeat: false,
-                              ),
-                            ),
-                          ),
-                          FadeTransition(
-                            opacity: _successAnim,
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 0.0, bottom: 0.0),
-                              child: Text(
-                                "Has subido tus bucles de la semana",
+
+            // Texto principal
+            Positioned(
+              top: 16,
+              left: 16,
+              right: 16,
+              child: AnimatedSlide(
+                offset: Offset(0, _slideDown ? 1.0 : 0.0),
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 400),
+                  child: Text.rich(
+                    key: ValueKey(_uploadSuccess),
+                    TextSpan(
+                      children: _uploadSuccess
+                          ? [
+                              TextSpan(
+                                text: "Has subido tus bucles de la semana",
                                 style: GoogleFonts.raleway(
                                   color: Colors.white,
                                   fontSize: 24,
                                   fontWeight: FontWeight.w700,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
-                            ),
-                          ),
-                        ] else ...[
-                          // Texto animado pre-éxito
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20.0, bottom: 2.0, left: 16, right: 16),
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 400),
-                              switchInCurve: Curves.easeInOut,
-                              switchOutCurve: Curves.easeInOut,
-                              child: Text.rich(
-                                key: const ValueKey('preSuccess'),
-                                TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: firstName,
-                                      style: GoogleFonts.raleway(
-                                        color: Colors.white,
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: ", estos han sido tus bucles de la semana",
-                                      style: GoogleFonts.raleway(
-                                        color: Colors.white,
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
+                            ]
+                          : [
+                              TextSpan(
+                                text: firstName,
+                                style: GoogleFonts.raleway(
+                                  color: Colors.white,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w800,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
-                            ),
-                          ),
-                        ],
-                        // Fade out de UserHeader y descripción
-                        AnimatedOpacity(
-                          opacity: _hideInputs ? 0.0 : 1.0,
-                          duration: const Duration(milliseconds: 400),
-                          child: Column(
-                            children: [
-                              if (!_uploadSuccess)
-                                UserHeader(
-                                  username: _user!['username'],
-                                  name: _user!['name'],
-                                  verificado: _user!['verificado'],
-                                  profilePic: _user!['profilePic'],
+                              TextSpan(
+                                text: ", estos han sido tus bucles de la semana",
+                                style: GoogleFonts.raleway(
+                                  color: Colors.white,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                              if (!_uploadSuccess)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
-                                  child: TextField(
-                                    controller: _commentController,
-                                    maxLines: 2,
-                                    style: const TextStyle(color: Colors.white),
-                                    decoration: const InputDecoration(
-                                      hintText: 'Describe tu publicación...',
-                                      hintStyle: TextStyle(color: Colors.grey),
-                                      border: InputBorder.none,
-                                      enabledBorder: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                                    ),
-                                  ),
-                                ),
+                              ),
                             ],
-                          ),
-                        ),
-                        // FriendTopSongsRow animado hacia abajo (menos distancia)
-                        AnimatedSlide(
-                          offset: _uploadSuccess ? const Offset(0, 0.12) : Offset.zero,
-                          duration: const Duration(milliseconds: 500),
-                          curve: Curves.easeInOut,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-                            child: FriendTopSongsRow(
-                              songs: _topSongs,
-                              name: _user!['name'],
-                            ),
-                          ),
-                        ),
-                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+
+            // Lottie de éxito (aparece después del deslizamiento)
+            Positioned(
+              top: 16, // Misma posición inicial que el texto
+              left: 0,
+              right: 0,
+              child: AnimatedOpacity(
+                opacity: _showSuccess ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 400),
+                child: Center(
+                  child: SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: Lottie.asset(
+                      'assets/success2.json',
+                      repeat: false,
                     ),
                   ),
                 ),
-                // Botón solo si no se ha subido
-                AnimatedOpacity(
-                  opacity: _hideInputs ? 0.0 : 1.0,
-                  duration: const Duration(milliseconds: 400),
-                  child: (!_uploadSuccess)
-                      ? Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 52,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                              onPressed: (_uploading || _uploadSuccess) ? null : _handleUpload,
-                              child: _uploading
-                                  ? const Text(
-                                      'Subiendo publicación',
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                                    )
-                                  : const Text(
-                                      'Subir publicación',
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                                    ),
-                            ),
-                          ),
-                        )
-                      : const SizedBox.shrink(),
+              ),
+            ),
+
+            // UserHeader
+            Positioned(
+              top: 80, // Ajustado según la altura aproximada del texto
+              left: 16,
+              right: 16,
+              child: AnimatedOpacity(
+                opacity: _hideInputs ? 0.0 : 1.0,
+                duration: const Duration(milliseconds: 400),
+                child: UserHeader(
+                  username: _user!['username'],
+                  name: _user!['name'],
+                  verificado: _user!['verificado'],
+                  profilePic: _user!['profilePic'],
                 ),
-              ],
+              ),
+            ),
+
+            // Campo de texto
+            Positioned(
+              top: 160, // Ajustado según la altura del UserHeader
+              left: 16,
+              right: 16,
+              child: AnimatedOpacity(
+                opacity: _hideInputs ? 0.0 : 1.0,
+                duration: const Duration(milliseconds: 400),
+                child: TextField(
+                  controller: _commentController,
+                  maxLines: 2,
+                  enabled: !_uploadSuccess,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    hintText: 'Describe tu publicación...',
+                    hintStyle: TextStyle(color: Colors.grey),
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                  ),
+                ),
+              ),
+            ),
+
+            // FriendTopSongsRow
+            Positioned(
+              top: 240, // Ajustado según las posiciones anteriores
+              left: 16,
+              right: 16,
+              child: AnimatedSlide(
+                offset: Offset(0, _slideDown ? 0.0 : 0.0),
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+                child: FriendTopSongsRow(
+                  songs: _topSongs,
+                  name: _user!['name'],
+                ),
+              ),
+            ),
+
+            // Botón de subir
+            Positioned(
+              bottom: 24,
+              left: 16,
+              right: 16,
+              child: AnimatedOpacity(
+                opacity: _hideInputs ? 0.0 : 1.0,
+                duration: const Duration(milliseconds: 400),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    onPressed: (_uploading || _uploadSuccess) ? null : _handleUpload,
+                    child: Text(
+                      _uploading ? 'Subiendo publicación' : 'Subir publicación',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

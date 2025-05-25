@@ -43,7 +43,7 @@ class ProfileHeader extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(top: 32, left: 16, right: 16, bottom: 8),
+      padding: const EdgeInsets.only(top: 10, left: 16, right: 16, bottom: 8),
       decoration: const BoxDecoration(
         color: Colors.transparent,
       ),
@@ -96,9 +96,21 @@ class ProfileHeader extends StatelessWidget {
               ),
             ),
           // Etiquetas debajo de la descripción
+          
+          // Stats centrados
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildStatItem('Seguidores', user['followers']?.toString() ?? followersDefault, center: true),
+              const SizedBox(width: 32),
+              _buildStatItem('Siguiendo', user['following']?.toString() ?? followingDefault, center: true),
+            ],
+          ),
+          
           if (labels.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(top: 10.0, bottom: 4.0),
+              padding: const EdgeInsets.only(top: 20.0, bottom: 4.0),
               child: SizedBox(
                 width: 320,
                 child: Wrap(
@@ -109,18 +121,6 @@ class ProfileHeader extends StatelessWidget {
                 ),
               ),
             ),
-          const SizedBox(height: 20),
-          // Stats centrados
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildStatItem('Seguidores', user['followers']?.toString() ?? followersDefault, center: true),
-              const SizedBox(width: 32),
-              _buildStatItem('Siguiendo', user['following']?.toString() ?? followingDefault, center: true),
-              const SizedBox(width: 32),
-              _buildStatItem('Escuchas', user['totalPlays']?.toString() ?? totalPlaysDefault, center: true),
-            ],
-          ),
           const SizedBox(height: 24),
           // Botón de acción
           if (isCurrentUser)

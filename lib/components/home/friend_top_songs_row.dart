@@ -25,8 +25,8 @@ class FriendTopSongs extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 120,
-            height: 120,
+            width: 110,
+            height: 110,
             child: Material(
               color: const Color.fromARGB(255, 0, 0, 0),
               child: Image.network(
@@ -38,7 +38,7 @@ class FriendTopSongs extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: SizedBox(
-              height: 120,
+              height: 110,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

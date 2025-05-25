@@ -32,8 +32,8 @@ class PinnedSong extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
                     song['image'] ?? '',
-                    width: 64,
-                    height: 64,
+                    width: 80,
+                    height: 80,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -42,6 +42,15 @@ class PinnedSong extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(
+                        "Esta canción es la bomba 💣",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
                       Text(
                         song['title'] ?? '',
                         style: const TextStyle(
@@ -61,16 +70,6 @@ class PinnedSong extends StatelessWidget {
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        song['duration'] != null && song['duration']!.isNotEmpty
-                            ? 'Duración: ${song['duration']}'
-                            : 'Canción destacada',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Colors.white54,
-                        ),
                       ),
                     ],
                   ),

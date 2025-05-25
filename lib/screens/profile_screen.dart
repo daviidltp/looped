@@ -141,28 +141,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         labels: widget.user['labels'] ?? ['Lo-Fi', 'Pop', 'Regueton',],
                       ),
                       const SizedBox(height: 32),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.push_pin,
-                              size: 20,
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Canción fijada',
-                              style: GoogleFonts.raleway(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 16),
                       if (formattedTracks.isNotEmpty) ...[
                         PinnedSong(
                           song: formattedTracks[0],
@@ -196,6 +174,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         name: widget.user['username'] ?? '',
                         description: null,
                       ),
+                      SizedBox(height: 40),
                     ],
                   ),
                 ),
